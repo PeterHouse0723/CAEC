@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAEC - Bienvenida</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-box">
+            <h1>Bienvenido a CAEC</h1>
+            <p class="subtitle">Sistema de Cultivo Hidropónico Automatizado</p>
+            <div class="description">
+                <p>Cultiva alimentos saludables de manera fácil y automatizada, sin importar tu nivel de experiencia.</p>
+                <p>Monitorea y controla tu sistema desde cualquier dispositivo.</p>
+            </div>
+            <div class="button-group">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Iniciar Sesión</a>
+                <a href="{{ url_for('inicio') }}" class="btn btn-secondary">Ver Demo</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

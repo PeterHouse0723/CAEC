@@ -1,0 +1,941 @@
+/* Estilos modernos para el dashboard CAEC */
+
+body {
+    background: #ffffff;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.dashboard-header {
+    background: #f8f9fa;
+    color: var(--text-primary);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-left h1 {
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-indicator {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-indicator.online {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: var(--success-color);
+    border: 2px solid var(--success-color);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Main Content */
+.dashboard-main {
+    flex: 1;
+    padding: var(--spacing-xl);
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.dashboard-main h2 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Visualización del Sistema CAEC Completo */
+.system-overview {
+    max-width: 900px;
+    margin: 0 auto var(--spacing-xl) auto;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.caec-system-diagram {
+    width: 100%;
+    height: auto;
+    max-height: 1200px;
+    display: block;
+}
+
+/* Animación de olas en el tanque del sistema - Movimiento suave vertical */
+.system-wave1 {
+    animation: waveFloat1 4s ease-in-out infinite;
+}
+
+.system-wave2 {
+    animation: waveFloat2 5s ease-in-out infinite;
+    animation-delay: -1s;
+}
+
+.system-wave3 {
+    animation: waveFloat3 6s ease-in-out infinite;
+    animation-delay: -2s;
+}
+
+/* Animaciones de olas que suben y bajan suavemente */
+@keyframes waveFloat1 {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-8px) scaleY(1.1);
+    }
+}
+
+@keyframes waveFloat2 {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-6px) scaleY(1.08);
+    }
+}
+
+@keyframes waveFloat3 {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-4px) scaleY(1.05);
+    }
+}
+
+/* Animaciones de salpicado de irrigación */
+.splash1 {
+    animation: splash 1.5s ease-in-out infinite;
+    animation-delay: 0s;
+}
+
+.splash2 {
+    animation: splash 1.5s ease-in-out infinite;
+    animation-delay: 0.2s;
+}
+
+.splash3 {
+    animation: splash 1.5s ease-in-out infinite;
+    animation-delay: 0.4s;
+}
+
+.splash4 {
+    animation: splash 1.5s ease-in-out infinite;
+    animation-delay: 0.1s;
+}
+
+.splash5 {
+    animation: splash 1.5s ease-in-out infinite;
+    animation-delay: 0.3s;
+}
+
+@keyframes splash {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-15px) scale(1);
+        opacity: 0.5;
+    }
+    80% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-25px) scale(0.6);
+        opacity: 0;
+    }
+}
+
+/* Grid de sensores - 3 columnas fijas */
+.sensors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: var(--spacing-xl);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Contenedor de cada tarjeta */
+.card-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Tarjeta de sensor base - Estilo minimalista */
+.sensor-card {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    min-height: 200px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    text-align: center;
+}
+
+.sensor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.sensor-card:active {
+    transform: translateY(-4px);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    position: relative;
+    z-index: 10;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.card-value {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-top: 0.8rem;
+}
+
+.value-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.value-unit {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.value-text {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* Tarjeta de Agua con animación de olas */
+.water-card {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: var(--text-primary);
+    border: 2px solid #90caf9;
+}
+
+.water-card .card-title,
+.water-card .value-number,
+.water-card .value-unit {
+    color: #1976d2;
+    position: relative;
+    z-index: 10;
+}
+
+.wave-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75%; /* Valor inicial, se actualizará dinámicamente con JavaScript */
+    overflow: hidden;
+    border-radius: 24px;
+    transition: height 0.8s ease;
+}
+
+.wave {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(25, 118, 210, 0.15);
+    border-radius: 45%;
+    transform: translateX(-50%);
+    animation: wave 10s infinite linear;
+}
+
+.wave1 {
+    animation-duration: 8s;
+    opacity: 0.3;
+}
+
+.wave2 {
+    animation-duration: 12s;
+    opacity: 0.2;
+    animation-delay: -5s;
+}
+
+.wave3 {
+    animation-duration: 15s;
+    opacity: 0.15;
+    animation-delay: -2s;
+}
+
+@keyframes wave {
+    0% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+/* Tarjeta de pH */
+.ph-card {
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+    color: var(--text-primary);
+    border: 2px solid #f48fb1;
+}
+
+.ph-card .card-title,
+.ph-card .value-number,
+.ph-card .value-unit {
+    color: #c2185b;
+}
+
+/* Tarjeta de Irrigación con gotas animadas */
+.irrigation-card {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    color: var(--text-primary);
+    border: 2px solid #80deea;
+}
+
+.irrigation-card .card-title,
+.irrigation-card .value-text {
+    color: #00838f;
+}
+
+.water-drop {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(0, 131, 143, 0.4);
+    border-radius: 50%;
+    animation: dropFall 2s infinite;
+}
+
+.drop1 {
+    left: 30%;
+    animation-delay: 0s;
+}
+
+.drop2 {
+    left: 50%;
+    animation-delay: 0.7s;
+}
+
+.drop3 {
+    left: 70%;
+    animation-delay: 1.4s;
+}
+
+@keyframes dropFall {
+    0% {
+        top: 20%;
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        top: 85%;
+        opacity: 0;
+    }
+}
+
+/* Tarjeta de Temperatura */
+.temperature-card {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    color: var(--text-primary);
+    border: 2px solid #ffcc80;
+}
+
+.temperature-card .card-title,
+.temperature-card .value-number,
+.temperature-card .value-unit {
+    color: #e65100;
+}
+
+/* Tarjeta de Nutrientes */
+.nutrient-card {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    color: var(--text-primary);
+    border: 2px solid #ce93d8;
+}
+
+.nutrient-card .card-title,
+.nutrient-card .value-number,
+.nutrient-card .value-unit {
+    color: #6a1b9a;
+}
+
+/* Tarjeta de Iluminación */
+.light-card {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+    color: var(--text-primary);
+    border: 2px solid #fff176;
+}
+
+.light-card .card-title,
+.light-card .value-text {
+    color: #f57f17;
+}
+
+.light-rays {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    opacity: 0.2;
+    animation: rotate 8s linear infinite;
+}
+
+.light-rays::before,
+.light-rays::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: rgba(245, 127, 23, 0.3);
+    transform: translate(-50%, -50%);
+}
+
+.light-rays::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@keyframes rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: var(--spacing-xl);
+    border-radius: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
+}
+
+/* Scrollbar personalizado para el modal - solo visible cuando hay overflow */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    color: var(--text-secondary);
+    float: right;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+#modalTitle {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.8rem;
+}
+
+/* Círculo de progreso */
+.circle-progress-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: var(--spacing-xl) auto;
+}
+
+.circle-progress {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #f0f0f0;
+    stroke-width: 12;
+}
+
+.circle-fill {
+    fill: none;
+    stroke: url(#gradient);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+    transition: stroke-dashoffset 1s ease;
+}
+
+.circle-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.circle-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.circle-value {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.circle-value span:first-child {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.circle-value span:last-child {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.circle-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-xs);
+}
+
+/* Detalles del modal */
+.modal-details {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.detail-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ===== ESTILOS PARA VISUALIZACIONES PERSONALIZADAS ===== */
+
+/* Contenedor de visualización */
+#visualizationContainer {
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg) 0;
+}
+
+/* Termómetro */
+.thermometer-container {
+    text-align: center;
+}
+
+.thermometer {
+    display: inline-block;
+}
+
+.thermometer-svg {
+    width: 120px;
+    height: 300px;
+}
+
+#mercuryLevel {
+    transition: all 1s ease-out;
+}
+
+.temperature-display {
+    margin-top: var(--spacing-md);
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.temp-value {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #e65100;
+}
+
+.temp-unit {
+    font-size: 2rem;
+    color: #ff6f00;
+}
+
+/* Tanque de Agua */
+.water-tank-container {
+    text-align: center;
+}
+
+.water-tank-svg {
+    width: 200px;
+    height: 300px;
+}
+
+#waterFillLevel {
+    transition: all 1s ease-out;
+}
+
+.water-level-display {
+    margin-top: var(--spacing-md);
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.level-value {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.level-unit {
+    font-size: 2rem;
+    color: #42a5f5;
+}
+
+/* Escala pH */
+.ph-scale-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.ph-gradient-bar {
+    position: relative;
+    height: 60px;
+    margin: var(--spacing-lg) 0;
+}
+
+.ph-colors {
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(to right,
+        #e74c3c 0%,
+        #f39c12 14%,
+        #f1c40f 28%,
+        #2ecc71 50%,
+        #3498db 72%,
+        #9b59b6 86%,
+        #c2185b 100%);
+    border-radius: 20px;
+}
+
+.ph-marker {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    transition: left 0.8s ease-out;
+}
+
+.marker-arrow {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 20px solid #c2185b;
+    margin: 0 auto;
+}
+
+.marker-value {
+    background: #c2185b;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.ph-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.ph-display {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+.ph-icon {
+    font-size: 2.5rem;
+}
+
+.ph-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #c2185b;
+    margin: 0 0.5rem;
+}
+
+.ph-text {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+/* Vaso de Laboratorio (Nutrientes) */
+.beaker-container {
+    text-align: center;
+}
+
+.beaker-svg {
+    width: 200px;
+    height: 300px;
+}
+
+.nutrient-display {
+    margin-top: var(--spacing-md);
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.nutrient-value {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #6a1b9a;
+}
+
+.nutrient-unit {
+    font-size: 2rem;
+    color: #ab47bc;
+}
+
+/* Visualización de Círculo Simple */
+.circle-icon-large {
+    font-size: 5rem;
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.circle-value-large {
+    text-align: center;
+}
+
+.value-main {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.value-unit-main {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+}
+
+/* Responsive */
+/* Tablets - 2 columnas */
+@media (max-width: 1024px) {
+    .sensors-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.2rem;
+    }
+
+    .dashboard-main {
+        padding: var(--spacing-lg);
+    }
+
+    .system-overview {
+        padding: var(--spacing-md);
+    }
+
+    .caec-system-diagram {
+        max-height: 900px;
+    }
+}
+
+/* Móviles - 1 columna */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+        padding: var(--spacing-md);
+    }
+
+    .dashboard-main {
+        padding: var(--spacing-md);
+    }
+
+    .dashboard-main h2 {
+        font-size: 1.8rem;
+    }
+
+    .system-overview {
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .caec-system-diagram {
+        max-height: 700px;
+    }
+
+    .sensors-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .sensor-card {
+        min-height: 180px;
+        padding: 1.2rem;
+    }
+
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: var(--spacing-lg);
+    }
+
+    .circle-progress-container {
+        width: 200px;
+        height: 200px;
+    }
+}

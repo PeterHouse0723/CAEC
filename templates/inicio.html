@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAEC - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>CAEC</h1>
+                <span class="status-indicator online">Sistema Activo</span>
+            </div>
+            <div class="header-right">
+                <span class="user-name">Usuario</span>
+                <a href="{{ url_for('login') }}" class="btn btn-small">Cerrar Sesión</a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <h2>Panel de Monitoreo Hidropónico</h2>
+
+            <!-- Visualización Resumen del Sistema CAEC -->
+            <div class="system-overview">
+                <svg class="caec-system-diagram" viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Torre Hidropónica Principal -->
+                    <g id="tower">
+                        <!-- Estructura de la torre -->
+                        <rect x="400" y="160" width="400" height="640" fill="none" stroke="#1976d2" stroke-width="6" rx="12"/>
+
+                        <!-- Columna de agua de irrigación (oculta por defecto) -->
+                        <g id="irrigationColumn" style="display: none;">
+                            <!-- Tubería de agua central -->
+                            <rect x="590" y="800" width="20" height="0" fill="url(#waterGradient)" class="water-column">
+                                <animate id="waterRise" attributeName="height" from="0" to="640" dur="2s" fill="freeze" begin="indefinite"/>
+                                <animate id="waterRiseY" attributeName="y" from="800" to="160" dur="2s" fill="freeze" begin="indefinite"/>
+                            </rect>
+
+                            <!-- Efecto de salpicado en la parte superior -->
+                            <g id="splashEffect" style="opacity: 0;">
+                                <circle cx="580" cy="140" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash1"/>
+                                <circle cx="600" cy="135" r="5" fill="#42a5f5" opacity="0.7" class="splash-drop splash2"/>
+                                <circle cx="620" cy="140" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash3"/>
+                                <circle cx="590" cy="145" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash4"/>
+                                <circle cx="610" cy="142" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash5"/>
+                            </g>
+                        </g>
+
+                        <!-- Gradiente para el agua -->
+                        <defs>
+                            <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1976d2;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#42a5f5;stop-opacity:0.8" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Niveles de plantas en la torre -->
+                        <line x1="400" y1="320" x2="800" y2="320" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
+                        <line x1="400" y1="480" x2="800" y2="480" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
+                        <line x1="400" y1="640" x2="800" y2="640" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
+
+                        <!-- Plantas distribuidas en niveles -->
+                        <circle cx="460" cy="220" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="740" cy="240" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="480" cy="380" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="720" cy="400" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="460" cy="540" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="740" cy="560" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="480" cy="700" r="28" fill="#4caf50" opacity="0.9"/>
+                        <circle cx="720" cy="720" r="28" fill="#4caf50" opacity="0.9"/>
+                    </g>
+
+                    <!-- Tanque de Agua conectado directamente a la torre -->
+                    <g id="waterTank">
+                        <!-- Contenedor del tanque (sin separación) -->
+                        <rect x="300" y="800" width="600" height="360" fill="#e3f2fd" stroke="#1976d2" stroke-width="6" rx="12"/>
+
+                        <!-- Clip para las olas -->
+                        <clipPath id="tankClip">
+                            <rect x="300" y="800" width="600" height="360" rx="12"/>
+                        </clipPath>
+
+                        <!-- Olas animadas que suben y bajan -->
+                        <g clip-path="url(#tankClip)">
+                            <g id="waterWaves" class="system-waves">
+                                <ellipse class="system-wave system-wave1" cx="600" cy="1000" rx="360" ry="50" fill="rgba(25, 118, 210, 0.3)"/>
+                                <ellipse class="system-wave system-wave2" cx="600" cy="1010" rx="360" ry="50" fill="rgba(25, 118, 210, 0.2)"/>
+                                <ellipse class="system-wave system-wave3" cx="600" cy="1020" rx="360" ry="50" fill="rgba(25, 118, 210, 0.15)"/>
+                                <!-- Relleno de agua debajo de las olas -->
+                                <rect id="waterFill" x="300" y="1000" width="600" height="160" fill="rgba(25, 118, 210, 0.2)"/>
+                            </g>
+                        </g>
+                    </g>
+
+                    <!-- Indicadores Minimalistas -->
+
+                    <!-- Indicador de Nivel de Agua -->
+                    <g id="waterLevelIndicator">
+                        <line x1="920" y1="980" x2="1040" y2="980" stroke="#1976d2" stroke-width="3"/>
+                        <circle cx="920" cy="980" r="6" fill="#1976d2"/>
+                        <text x="1050" y="970" font-size="24" fill="#666" font-weight="500">Nivel de Agua</text>
+                        <text id="waterLevelText" x="1050" y="1005" font-size="40" fill="#1976d2" font-weight="bold">75%</text>
+                    </g>
+
+                    <!-- Indicador de pH -->
+                    <g id="phIndicator">
+                        <line x1="280" y1="980" x2="160" y2="980" stroke="#ec407a" stroke-width="3"/>
+                        <circle cx="280" cy="980" r="6" fill="#ec407a"/>
+                        <text x="150" y="970" text-anchor="end" font-size="24" fill="#666" font-weight="500">Nivel pH</text>
+                        <text id="phValueText" x="150" y="1005" text-anchor="end" font-size="40" fill="#ec407a" font-weight="bold">7</text>
+                    </g>
+
+                    <!-- Indicador de Nutrientes -->
+                    <g id="nutrientIndicator">
+                        <line x1="600" y1="1180" x2="600" y2="1260" stroke="#ab47bc" stroke-width="3"/>
+                        <circle cx="600" cy="1180" r="6" fill="#ab47bc"/>
+                        <text x="600" y="1295" text-anchor="middle" font-size="24" fill="#666" font-weight="500">Nutrientes</text>
+                        <text id="nutrientValueText" x="600" y="1335" text-anchor="middle" font-size="40" fill="#ab47bc" font-weight="bold">85%</text>
+                    </g>
+
+                    <!-- Tubería conectando torre con tanque -->
+                    <path d="M 300 400 L 300 400" stroke="#1976d2" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+
+            <!-- Monitoring Grid with Interactive Cards -->
+            <div class="sensors-grid">
+                <!-- Contenedor Tarjeta Nivel de Agua -->
+                <div class="card-wrapper">
+                    <button class="sensor-card water-card" data-sensor="water" onclick="openSensorModal('water')">
+                        <div class="card-icon">💧</div>
+                        <h3 class="card-title">Nivel de Agua</h3>
+                        <div class="card-value">
+                            <span class="value-number" id="waterValue">75</span>
+                            <span class="value-unit">%</span>
+                        </div>
+                        <div class="wave-container">
+                            <div class="wave wave1"></div>
+                            <div class="wave wave2"></div>
+                            <div class="wave wave3"></div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Contenedor Tarjeta pH -->
+                <div class="card-wrapper">
+                    <button class="sensor-card ph-card" data-sensor="ph" onclick="openSensorModal('ph')">
+                        <div class="card-icon">🧪</div>
+                        <h3 class="card-title">Nivel pH</h3>
+                        <div class="card-value">
+                            <span class="value-number" id="phValue">6.5</span>
+                            <span class="value-unit">pH</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Contenedor Tarjeta Irrigación -->
+                <div class="card-wrapper">
+                    <button class="sensor-card irrigation-card" data-sensor="irrigation" onclick="openSensorModal('irrigation')">
+                        <div class="card-icon">🚿</div>
+                        <h3 class="card-title">Irrigación</h3>
+                        <div class="card-value">
+                            <span class="value-text" id="irrigationValue">Activo</span>
+                        </div>
+                        <div class="water-drop drop1"></div>
+                        <div class="water-drop drop2"></div>
+                        <div class="water-drop drop3"></div>
+                    </button>
+                </div>
+
+                <!-- Contenedor Tarjeta Temperatura -->
+                <div class="card-wrapper">
+                    <button class="sensor-card temperature-card" data-sensor="temperature" onclick="openSensorModal('temperature')">
+                        <div class="card-icon">🌡️</div>
+                        <h3 class="card-title">Temperatura</h3>
+                        <div class="card-value">
+                            <span class="value-number" id="tempValue">22</span>
+                            <span class="value-unit">°C</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Contenedor Tarjeta Nutrientes -->
+                <div class="card-wrapper">
+                    <button class="sensor-card nutrient-card" data-sensor="nutrient" onclick="openSensorModal('nutrient')">
+                        <div class="card-icon">⚗️</div>
+                        <h3 class="card-title">Nutrientes</h3>
+                        <div class="card-value">
+                            <span class="value-number" id="nutrientValue">85</span>
+                            <span class="value-unit">%</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Contenedor Tarjeta Iluminación -->
+                <div class="card-wrapper">
+                    <button class="sensor-card light-card" data-sensor="light" onclick="openSensorModal('light')">
+                        <div class="card-icon">💡</div>
+                        <h3 class="card-title">Iluminación</h3>
+                        <div class="card-value">
+                            <span class="value-text" id="lightValue">Encendido</span>
+                        </div>
+                        <div class="light-rays"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal para mostrar detalles del sensor -->
+            <div id="sensorModal" class="modal" onclick="closeModalOnOutsideClick(event)">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <h2 id="modalTitle">Sensor</h2>
+
+                    <!-- Contenedor de visualización (se cargará dinámicamente) -->
+                    <div id="visualizationContainer">
+                        <!-- Aquí se insertará la visualización específica -->
+                    </div>
+
+                    <!-- Detalles adicionales -->
+                    <div class="modal-details" id="modalDetails">
+                        <!-- Los detalles se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

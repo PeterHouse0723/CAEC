@@ -1,0 +1,396 @@
+/* Estilos específicos para el dashboard */
+
+body {
+    background: var(--bg-primary);
+}
+
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.dashboard-header {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-left h1 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-indicator.online {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-name {
+    font-weight: 500;
+}
+
+/* Main Content */
+.dashboard-main {
+    flex: 1;
+    padding: var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.dashboard-main h2 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    font-size: 2rem;
+}
+
+/* Alerts Container */
+.alerts-container {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.alerts-container h3 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.2rem;
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.alert {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid var(--info-color);
+}
+
+.alert-warning {
+    background-color: rgba(243, 156, 18, 0.1);
+    border-left: 4px solid var(--warning-color);
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+}
+
+.alert-message {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.alert-time {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Monitoring Grid */
+.monitoring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* Monitor Card */
+.monitor-card {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.monitor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.ok {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: var(--text-light);
+}
+
+.status-badge.active {
+    background-color: rgba(46, 204, 113, 0.9);
+    color: var(--text-light);
+}
+
+.status-badge.warning {
+    background-color: rgba(243, 156, 18, 0.9);
+    color: var(--text-light);
+}
+
+.status-badge.danger {
+    background-color: rgba(231, 76, 60, 0.9);
+    color: var(--text-light);
+}
+
+.card-body {
+    padding: var(--spacing-lg);
+}
+
+.metric-display {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.metric-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.metric-unit {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-left: var(--spacing-xs);
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--bg-primary);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+/* pH Scale */
+.ph-scale {
+    position: relative;
+    height: 30px;
+    background: linear-gradient(90deg,
+        #e74c3c 0%,
+        #f39c12 25%,
+        #f1c40f 40%,
+        #2ecc71 50%,
+        #3498db 75%,
+        #9b59b6 100%);
+    border-radius: 15px;
+    margin-bottom: var(--spacing-md);
+}
+
+.ph-indicator {
+    position: absolute;
+    top: -5px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 3px solid var(--text-primary);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.5s ease;
+    box-shadow: var(--shadow-md);
+}
+
+/* Temperature Gauge */
+.temp-gauge {
+    width: 80px;
+    height: 200px;
+    background-color: var(--bg-primary);
+    border-radius: 40px;
+    margin: 0 auto var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.temp-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(0deg, var(--info-color) 0%, var(--danger-color) 100%);
+    border-radius: 40px;
+    transition: height 0.5s ease;
+}
+
+/* Irrigation Status */
+.irrigation-status,
+.light-status {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.status-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.status-text {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.irrigation-info,
+.light-info {
+    margin-bottom: var(--spacing-md);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--bg-primary);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.info-row span:last-child {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Metric Info */
+.metric-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: var(--spacing-sm);
+}
+
+.metric-info span {
+    text-align: center;
+    flex: 1;
+}
+
+/* Card Footer */
+.card-footer {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--bg-primary);
+    border-top: 1px solid #e0e0e0;
+}
+
+.last-update {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+
+    .header-left,
+    .header-right {
+        flex-direction: column;
+    }
+
+    .dashboard-main {
+        padding: var(--spacing-md);
+    }
+
+    .dashboard-main h2 {
+        font-size: 1.5rem;
+    }
+
+    .monitoring-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .metric-value {
+        font-size: 2.5rem;
+    }
+}
