@@ -1,89 +1,200 @@
 import sqlite3
+import psycopg2
+import psycopg2.extras
 from datetime import datetime
 import secrets
+import os
 
 def get_db_connection():
-    """Obtener conexión a la base de datos SQLite"""
-    conn = sqlite3.connect('caec.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Obtener conexión a la base de datos (PostgreSQL en producción, SQLite en desarrollo)"""
+    database_url = os.environ.get('DATABASE_URL')
+
+    if database_url:
+        # PostgreSQL en producción (Render)
+        conn = psycopg2.connect(database_url)
+        # Usar RealDictCursor para obtener resultados como diccionarios
+        return conn
+    else:
+        # SQLite en desarrollo local
+        conn = sqlite3.connect('caec.db')
+        conn.row_factory = sqlite3.Row
+        return conn
+
+def get_cursor(conn):
+    """Obtener cursor apropiado según el tipo de base de datos"""
+    if is_postgres():
+        return conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    else:
+        return conn.cursor()
+
+def is_postgres():
+    """Verificar si estamos usando PostgreSQL"""
+    return os.environ.get('DATABASE_URL') is not None
+
+def dict_from_row(row):
+    """Convertir una fila de base de datos a diccionario"""
+    if row is None:
+        return None
+    if is_postgres():
+        # PostgreSQL con psycopg2 - row es tupla, necesitamos los nombres de columnas
+        return row
+    else:
+        # SQLite - row_factory ya lo convierte a dict-like
+        return dict(row)
 
 def init_db():
     """Inicializar la base de datos con las tablas necesarias"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
+
+    # Detectar si es PostgreSQL o SQLite
+    use_postgres = is_postgres()
 
     # Tabla de usuarios
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS usuario (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre VARCHAR(100) NOT NULL,
-            apellido VARCHAR(100) NOT NULL,
-            email VARCHAR(150) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-            ultimo_acceso DATETIME,
-            activo BOOLEAN DEFAULT 1
-        )
-    ''')
+    if use_postgres:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS usuario (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100) NOT NULL,
+                apellido VARCHAR(100) NOT NULL,
+                email VARCHAR(150) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                ultimo_acceso TIMESTAMP,
+                activo BOOLEAN DEFAULT TRUE
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS usuario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre VARCHAR(100) NOT NULL,
+                apellido VARCHAR(100) NOT NULL,
+                email VARCHAR(150) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+                ultimo_acceso DATETIME,
+                activo BOOLEAN DEFAULT 1
+            )
+        ''')
 
     # Tabla de contacto
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS contacto (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            usuario_id INTEGER NOT NULL,
-            telefono VARCHAR(20),
-            celular VARCHAR(20),
-            direccion TEXT,
-            ciudad VARCHAR(100),
-            pais VARCHAR(100),
-            codigo_postal VARCHAR(20),
-            FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
-        )
-    ''')
+    if use_postgres:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contacto (
+                id SERIAL PRIMARY KEY,
+                usuario_id INTEGER NOT NULL,
+                telefono VARCHAR(20),
+                celular VARCHAR(20),
+                direccion TEXT,
+                ciudad VARCHAR(100),
+                pais VARCHAR(100),
+                codigo_postal VARCHAR(20),
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contacto (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                telefono VARCHAR(20),
+                celular VARCHAR(20),
+                direccion TEXT,
+                ciudad VARCHAR(100),
+                pais VARCHAR(100),
+                codigo_postal VARCHAR(20),
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+            )
+        ''')
 
     # Tabla de sistemas CAEC
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS sistema_caec (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            codigo_sistema VARCHAR(50) UNIQUE NOT NULL,
-            usuario_id INTEGER,
-            nombre_sistema VARCHAR(100),
-            fecha_vinculacion DATETIME,
-            ultimo_sync DATETIME,
-            estado VARCHAR(20) DEFAULT 'activo',
-            modelo VARCHAR(50),
-            version_firmware VARCHAR(20),
-            FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE SET NULL
-        )
-    ''')
+    if use_postgres:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sistema_caec (
+                id SERIAL PRIMARY KEY,
+                codigo_sistema VARCHAR(50) UNIQUE NOT NULL,
+                usuario_id INTEGER,
+                nombre_sistema VARCHAR(100),
+                fecha_vinculacion TIMESTAMP,
+                ultimo_sync TIMESTAMP,
+                estado VARCHAR(20) DEFAULT 'activo',
+                modelo VARCHAR(50),
+                version_firmware VARCHAR(20),
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE SET NULL
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sistema_caec (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                codigo_sistema VARCHAR(50) UNIQUE NOT NULL,
+                usuario_id INTEGER,
+                nombre_sistema VARCHAR(100),
+                fecha_vinculacion DATETIME,
+                ultimo_sync DATETIME,
+                estado VARCHAR(20) DEFAULT 'activo',
+                modelo VARCHAR(50),
+                version_firmware VARCHAR(20),
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE SET NULL
+            )
+        ''')
 
     # Tabla de datos de sensores (histórico)
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS sensor_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sistema_id INTEGER NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            nivel_agua REAL,
-            ph REAL,
-            temperatura REAL,
-            nivel_nutrientes REAL,
-            irrigacion_activa BOOLEAN,
-            luz_activa BOOLEAN,
-            FOREIGN KEY (sistema_id) REFERENCES sistema_caec(id) ON DELETE CASCADE
-        )
-    ''')
+    if use_postgres:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sensor_data (
+                id SERIAL PRIMARY KEY,
+                sistema_id INTEGER NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                nivel_agua REAL,
+                ph REAL,
+                temperatura REAL,
+                nivel_nutrientes REAL,
+                irrigacion_activa BOOLEAN,
+                luz_activa BOOLEAN,
+                FOREIGN KEY (sistema_id) REFERENCES sistema_caec(id) ON DELETE CASCADE
+            )
+        ''')
+    else:
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sensor_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sistema_id INTEGER NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                nivel_agua REAL,
+                ph REAL,
+                temperatura REAL,
+                nivel_nutrientes REAL,
+                irrigacion_activa BOOLEAN,
+                luz_activa BOOLEAN,
+                FOREIGN KEY (sistema_id) REFERENCES sistema_caec(id) ON DELETE CASCADE
+            )
+        ''')
 
     # Insertar sistemas CAEC de ejemplo para pruebas
-    cursor.execute('''
-        INSERT OR IGNORE INTO sistema_caec
-        (codigo_sistema, nombre_sistema, estado, modelo, version_firmware)
-        VALUES
-        ('CAEC-2024-0001', 'Sistema Demo 1', 'disponible', 'CAEC-V1', '1.0.0'),
-        ('CAEC-2024-0002', 'Sistema Demo 2', 'disponible', 'CAEC-V1', '1.0.0'),
-        ('CAEC-2024-0003', 'Sistema Demo 3', 'disponible', 'CAEC-V2', '1.2.0'),
-        ('CAEC-2024-TEST', 'Sistema Test', 'disponible', 'CAEC-V1', '1.0.0')
-    ''')
+    if use_postgres:
+        # PostgreSQL usa ON CONFLICT en lugar de INSERT OR IGNORE
+        cursor.execute('''
+            INSERT INTO sistema_caec
+            (codigo_sistema, nombre_sistema, estado, modelo, version_firmware)
+            VALUES
+            ('CAEC-2024-0001', 'Sistema Demo 1', 'disponible', 'CAEC-V1', '1.0.0'),
+            ('CAEC-2024-0002', 'Sistema Demo 2', 'disponible', 'CAEC-V1', '1.0.0'),
+            ('CAEC-2024-0003', 'Sistema Demo 3', 'disponible', 'CAEC-V2', '1.2.0'),
+            ('CAEC-2024-TEST', 'Sistema Test', 'disponible', 'CAEC-V1', '1.0.0')
+            ON CONFLICT (codigo_sistema) DO NOTHING
+        ''')
+    else:
+        cursor.execute('''
+            INSERT OR IGNORE INTO sistema_caec
+            (codigo_sistema, nombre_sistema, estado, modelo, version_firmware)
+            VALUES
+            ('CAEC-2024-0001', 'Sistema Demo 1', 'disponible', 'CAEC-V1', '1.0.0'),
+            ('CAEC-2024-0002', 'Sistema Demo 2', 'disponible', 'CAEC-V1', '1.0.0'),
+            ('CAEC-2024-0003', 'Sistema Demo 3', 'disponible', 'CAEC-V2', '1.2.0'),
+            ('CAEC-2024-TEST', 'Sistema Test', 'disponible', 'CAEC-V1', '1.0.0')
+        ''')
 
     conn.commit()
     conn.close()
@@ -92,25 +203,39 @@ def init_db():
 def crear_usuario(nombre, apellido, email, password):
     """Crear un nuevo usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
+
+    # Usar placeholders según el tipo de BD
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
-        cursor.execute('''
-            INSERT INTO usuario (nombre, apellido, email, password)
-            VALUES (?, ?, ?, ?)
-        ''', (nombre, apellido, email, password))
+        if is_postgres():
+            cursor.execute(f'''
+                INSERT INTO usuario (nombre, apellido, email, password)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})
+                RETURNING id
+            ''', (nombre, apellido, email, password))
+            usuario_id = cursor.fetchone()['id']
 
-        usuario_id = cursor.lastrowid
+            cursor.execute(f'''
+                INSERT INTO contacto (usuario_id)
+                VALUES ({placeholder})
+            ''', (usuario_id,))
+        else:
+            cursor.execute(f'''
+                INSERT INTO usuario (nombre, apellido, email, password)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})
+            ''', (nombre, apellido, email, password))
+            usuario_id = cursor.lastrowid
 
-        # Crear registro de contacto vacío
-        cursor.execute('''
-            INSERT INTO contacto (usuario_id)
-            VALUES (?)
-        ''', (usuario_id,))
+            cursor.execute(f'''
+                INSERT INTO contacto (usuario_id)
+                VALUES ({placeholder})
+            ''', (usuario_id,))
 
         conn.commit()
         return usuario_id
-    except sqlite3.IntegrityError:
+    except (sqlite3.IntegrityError, psycopg2.IntegrityError):
         return None
     finally:
         conn.close()
@@ -118,21 +243,25 @@ def crear_usuario(nombre, apellido, email, password):
 def verificar_usuario(email, password):
     """Verificar credenciales de usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    # Para PostgreSQL, activo es booleano; para SQLite es 1
+    activo_value = True if is_postgres() else 1
+
+    cursor.execute(f'''
         SELECT * FROM usuario
-        WHERE email = ? AND password = ? AND activo = 1
-    ''', (email, password))
+        WHERE email = {placeholder} AND password = {placeholder} AND activo = {placeholder}
+    ''', (email, password, activo_value))
 
     usuario = cursor.fetchone()
 
     if usuario:
         # Actualizar último acceso
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE usuario
             SET ultimo_acceso = CURRENT_TIMESTAMP
-            WHERE id = ?
+            WHERE id = {placeholder}
         ''', (usuario['id'],))
         conn.commit()
 
@@ -142,7 +271,7 @@ def verificar_usuario(email, password):
 def obtener_sistema_usuario(usuario_id):
     """Obtener el sistema CAEC asociado a un usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     cursor.execute('''
         SELECT * FROM sistema_caec
@@ -157,7 +286,7 @@ def obtener_sistema_usuario(usuario_id):
 def validar_codigo_sistema(codigo_sistema):
     """Validar si un código de sistema existe y está disponible"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     cursor.execute('''
         SELECT * FROM sistema_caec
@@ -172,7 +301,7 @@ def validar_codigo_sistema(codigo_sistema):
 def vincular_sistema_usuario(codigo_sistema, usuario_id, nombre_sistema=None):
     """Vincular un sistema CAEC a un usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         if nombre_sistema is None:
@@ -200,7 +329,7 @@ def vincular_sistema_usuario(codigo_sistema, usuario_id, nombre_sistema=None):
 def actualizar_ultimo_sync(sistema_id):
     """Actualizar la última sincronización del sistema"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     cursor.execute('''
         UPDATE sistema_caec
@@ -214,7 +343,7 @@ def actualizar_ultimo_sync(sistema_id):
 def obtener_usuario_por_id(usuario_id):
     """Obtener datos completos del usuario incluyendo información de contacto"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     cursor.execute('''
         SELECT u.*, c.telefono, c.celular, c.direccion, c.ciudad, c.pais, c.codigo_postal
@@ -231,7 +360,7 @@ def obtener_usuario_por_id(usuario_id):
 def actualizar_usuario(usuario_id, nombre, apellido, telefono, celular, direccion, ciudad, codigo_postal, pais):
     """Actualizar información del usuario y contacto"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         # Actualizar datos del usuario
@@ -261,7 +390,7 @@ def actualizar_usuario(usuario_id, nombre, apellido, telefono, celular, direccio
 def cambiar_password(usuario_id, nueva_password):
     """Cambiar la contraseña del usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         cursor.execute('''
@@ -283,7 +412,7 @@ def cambiar_password(usuario_id, nueva_password):
 def obtener_sistema_activo(usuario_id):
     """Obtener el sistema activo del usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     cursor.execute('''
         SELECT * FROM sistema_caec
@@ -299,7 +428,7 @@ def obtener_sistema_activo(usuario_id):
 def obtener_todos_sistemas_usuario(usuario_id, exclude_active=False):
     """Obtener todos los sistemas del usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     if exclude_active:
         cursor.execute('''
@@ -322,7 +451,7 @@ def obtener_todos_sistemas_usuario(usuario_id, exclude_active=False):
 def crear_sistema_caec(usuario_id, nombre, ubicacion, tipo_sistema, descripcion=None):
     """Crear un nuevo sistema CAEC para el usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         # Generar código único para el sistema
@@ -346,7 +475,7 @@ def crear_sistema_caec(usuario_id, nombre, ubicacion, tipo_sistema, descripcion=
 def activar_sistema(usuario_id, system_id):
     """Activar un sistema específico y desactivar los demás"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         # Desactivar todos los sistemas del usuario
@@ -376,7 +505,7 @@ def activar_sistema(usuario_id, system_id):
 def eliminar_sistema(usuario_id, system_id):
     """Eliminar un sistema del usuario"""
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = get_cursor(conn)
 
     try:
         cursor.execute('''
