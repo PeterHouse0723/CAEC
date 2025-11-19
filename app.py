@@ -6,7 +6,7 @@ from database import (
 )
 
 app = Flask(__name__)
-app.secret_key = 'caec_secret_key_2024'  # Cambiar en producción
+app.secret_key = os.environ.get('SECRET_KEY', 'caec_secret_key_2024')  # Usa variable de entorno en producción
 
 # Inicializar base de datos al iniciar la aplicación
 init_db()
@@ -408,4 +408,5 @@ def delete_system(system_id):
     return redirect(url_for('systems'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

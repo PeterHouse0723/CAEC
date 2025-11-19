@@ -343,23 +343,8 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
                 </svg>
             </div>
 
-            <!-- Botones de activar/desactivar -->
-            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 25px;">
-                <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
-                        style="flex: 1; padding: 14px 24px; border-radius: 10px; border: 2px solid #424242;
-                               background: ${isActive ? '#424242' : 'white'};
-                               color: ${isActive ? 'white' : '#424242'};
-                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                    Activar Sistema
-                </button>
-                <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
-                        style="flex: 1; padding: 14px 24px; border-radius: 10px; border: 2px solid #757575;
-                               background: ${!isActive ? '#757575' : 'white'};
-                               color: ${!isActive ? 'white' : '#757575'};
-                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                    Desactivar Sistema
-                </button>
-            </div>
+            <!-- Espacio -->
+            <div style="height: 20px;"></div>
 
             <!-- Modo de Ahorro de Energía -->
             <div style="padding: 20px; background: rgba(255, 193, 7, 0.08); border-radius: 12px; border: 1px solid rgba(255, 193, 7, 0.3); margin-bottom: 20px;">
@@ -413,12 +398,33 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
                 </p>
             </div>
 
+            <!-- Botones de activar/desactivar -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
+                        style="flex: 1; padding: 14px 20px; border-radius: 10px; border: 2px solid #424242;
+                               background: ${isActive ? '#424242' : 'white'};
+                               color: ${isActive ? 'white' : '#424242'};
+                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    Activar
+                </button>
+                <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
+                        style="flex: 1; padding: 14px 20px; border-radius: 10px; border: 2px solid #757575;
+                               background: ${!isActive ? '#757575' : 'white'};
+                               color: ${!isActive ? 'white' : '#757575'};
+                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    Desactivar
+                </button>
+            </div>
+
             <!-- Botón de guardar configuración -->
             <button onclick="saveIrrigationConfig()"
                     style="width: 100%; margin-bottom: 20px; padding: 16px; background: linear-gradient(135deg, #424242 0%, #616161 100%); color: white; border: none;
                            border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1.05rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                 💾 Guardar Configuración
             </button>
+
+            <!-- Espacio -->
+            <div style="height: 15px;"></div>
 
             <!-- Resumen del estado del sistema -->
             <div style="padding: 20px; background: rgba(76, 175, 80, 0.08); border-radius: 12px; border: 1px solid rgba(76, 175, 80, 0.3);">
