@@ -272,10 +272,11 @@ def obtener_sistema_usuario(usuario_id):
     """Obtener el sistema CAEC asociado a un usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    cursor.execute(f'''
         SELECT * FROM sistema_caec
-        WHERE usuario_id = ? AND estado = 'activo'
+        WHERE usuario_id = {placeholder} AND estado = 'activo'
     ''', (usuario_id,))
 
     sistema = cursor.fetchone()
@@ -287,10 +288,11 @@ def validar_codigo_sistema(codigo_sistema):
     """Validar si un código de sistema existe y está disponible"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    cursor.execute(f'''
         SELECT * FROM sistema_caec
-        WHERE codigo_sistema = ? AND (usuario_id IS NULL OR estado = 'disponible')
+        WHERE codigo_sistema = {placeholder} AND (usuario_id IS NULL OR estado = 'disponible')
     ''', (codigo_sistema,))
 
     sistema = cursor.fetchone()
@@ -302,19 +304,20 @@ def vincular_sistema_usuario(codigo_sistema, usuario_id, nombre_sistema=None):
     """Vincular un sistema CAEC a un usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
         if nombre_sistema is None:
             nombre_sistema = f"Mi Sistema CAEC"
 
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE sistema_caec
-            SET usuario_id = ?,
-                nombre_sistema = ?,
+            SET usuario_id = {placeholder},
+                nombre_sistema = {placeholder},
                 fecha_vinculacion = CURRENT_TIMESTAMP,
                 ultimo_sync = CURRENT_TIMESTAMP,
                 estado = 'activo'
-            WHERE codigo_sistema = ?
+            WHERE codigo_sistema = {placeholder}
         ''', (usuario_id, nombre_sistema, codigo_sistema))
 
         conn.commit()
@@ -330,11 +333,12 @@ def actualizar_ultimo_sync(sistema_id):
     """Actualizar la última sincronización del sistema"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    cursor.execute(f'''
         UPDATE sistema_caec
         SET ultimo_sync = CURRENT_TIMESTAMP
-        WHERE id = ?
+        WHERE id = {placeholder}
     ''', (sistema_id,))
 
     conn.commit()
@@ -344,12 +348,13 @@ def obtener_usuario_por_id(usuario_id):
     """Obtener datos completos del usuario incluyendo información de contacto"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    cursor.execute(f'''
         SELECT u.*, c.telefono, c.celular, c.direccion, c.ciudad, c.pais, c.codigo_postal
         FROM usuario u
         LEFT JOIN contacto c ON u.id = c.usuario_id
-        WHERE u.id = ?
+        WHERE u.id = {placeholder}
     ''', (usuario_id,))
 
     usuario = cursor.fetchone()
@@ -361,20 +366,22 @@ def actualizar_usuario(usuario_id, nombre, apellido, telefono, celular, direccio
     """Actualizar información del usuario y contacto"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
         # Actualizar datos del usuario
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE usuario
-            SET nombre = ?, apellido = ?
-            WHERE id = ?
+            SET nombre = {placeholder}, apellido = {placeholder}
+            WHERE id = {placeholder}
         ''', (nombre, apellido, usuario_id))
 
         # Actualizar datos de contacto
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE contacto
-            SET telefono = ?, celular = ?, direccion = ?, ciudad = ?, codigo_postal = ?, pais = ?
-            WHERE usuario_id = ?
+            SET telefono = {placeholder}, celular = {placeholder}, direccion = {placeholder},
+                ciudad = {placeholder}, codigo_postal = {placeholder}, pais = {placeholder}
+            WHERE usuario_id = {placeholder}
         ''', (telefono, celular, direccion, ciudad, codigo_postal, pais, usuario_id))
 
         conn.commit()
@@ -391,12 +398,13 @@ def cambiar_password(usuario_id, nueva_password):
     """Cambiar la contraseña del usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE usuario
-            SET password = ?
-            WHERE id = ?
+            SET password = {placeholder}
+            WHERE id = {placeholder}
         ''', (nueva_password, usuario_id))
 
         conn.commit()
@@ -413,10 +421,11 @@ def obtener_sistema_activo(usuario_id):
     """Obtener el sistema activo del usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
-    cursor.execute('''
+    cursor.execute(f'''
         SELECT * FROM sistema_caec
-        WHERE usuario_id = ? AND estado = 'activo'
+        WHERE usuario_id = {placeholder} AND estado = 'activo'
         LIMIT 1
     ''', (usuario_id,))
 
@@ -429,17 +438,18 @@ def obtener_todos_sistemas_usuario(usuario_id, exclude_active=False):
     """Obtener todos los sistemas del usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     if exclude_active:
-        cursor.execute('''
+        cursor.execute(f'''
             SELECT * FROM sistema_caec
-            WHERE usuario_id = ? AND estado != 'activo'
+            WHERE usuario_id = {placeholder} AND estado != 'activo'
             ORDER BY fecha_vinculacion DESC
         ''', (usuario_id,))
     else:
-        cursor.execute('''
+        cursor.execute(f'''
             SELECT * FROM sistema_caec
-            WHERE usuario_id = ?
+            WHERE usuario_id = {placeholder}
             ORDER BY fecha_vinculacion DESC
         ''', (usuario_id,))
 
@@ -452,18 +462,28 @@ def crear_sistema_caec(usuario_id, nombre, ubicacion, tipo_sistema, descripcion=
     """Crear un nuevo sistema CAEC para el usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
         # Generar código único para el sistema
         codigo_sistema = f"CAEC-{secrets.token_hex(4).upper()}"
 
-        cursor.execute('''
-            INSERT INTO sistema_caec
-            (codigo_sistema, usuario_id, nombre_sistema, fecha_vinculacion, ultimo_sync, estado, modelo, version_firmware)
-            VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'activo', ?, '1.0.0')
-        ''', (codigo_sistema, usuario_id, f"{nombre} ({ubicacion})", tipo_sistema))
+        if is_postgres():
+            cursor.execute(f'''
+                INSERT INTO sistema_caec
+                (codigo_sistema, usuario_id, nombre_sistema, fecha_vinculacion, ultimo_sync, estado, modelo, version_firmware)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'activo', {placeholder}, '1.0.0')
+                RETURNING id
+            ''', (codigo_sistema, usuario_id, f"{nombre} ({ubicacion})", tipo_sistema))
+            system_id = cursor.fetchone()['id']
+        else:
+            cursor.execute(f'''
+                INSERT INTO sistema_caec
+                (codigo_sistema, usuario_id, nombre_sistema, fecha_vinculacion, ultimo_sync, estado, modelo, version_firmware)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'activo', {placeholder}, '1.0.0')
+            ''', (codigo_sistema, usuario_id, f"{nombre} ({ubicacion})", tipo_sistema))
+            system_id = cursor.lastrowid
 
-        system_id = cursor.lastrowid
         conn.commit()
         return system_id
     except Exception as e:
@@ -476,20 +496,21 @@ def activar_sistema(usuario_id, system_id):
     """Activar un sistema específico y desactivar los demás"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
         # Desactivar todos los sistemas del usuario
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE sistema_caec
             SET estado = 'inactivo'
-            WHERE usuario_id = ?
+            WHERE usuario_id = {placeholder}
         ''', (usuario_id,))
 
         # Activar el sistema seleccionado
-        cursor.execute('''
+        cursor.execute(f'''
             UPDATE sistema_caec
             SET estado = 'activo'
-            WHERE id = ? AND usuario_id = ?
+            WHERE id = {placeholder} AND usuario_id = {placeholder}
         ''', (system_id, usuario_id))
 
         conn.commit()
@@ -506,11 +527,12 @@ def eliminar_sistema(usuario_id, system_id):
     """Eliminar un sistema del usuario"""
     conn = get_db_connection()
     cursor = get_cursor(conn)
+    placeholder = '%s' if is_postgres() else '?'
 
     try:
-        cursor.execute('''
+        cursor.execute(f'''
             DELETE FROM sistema_caec
-            WHERE id = ? AND usuario_id = ?
+            WHERE id = {placeholder} AND usuario_id = {placeholder}
         ''', (system_id, usuario_id))
 
         conn.commit()
