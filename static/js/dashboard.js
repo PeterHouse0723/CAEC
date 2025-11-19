@@ -4,7 +4,13 @@
 let systemData = {
     water: { value: 75, unit: '%', label: 'Nivel Actual', target: 3000 },
     ph: { value: 6.5, unit: 'pH', label: 'Nivel Actual', min: 5.5, max: 8.5 },
-    irrigation: { value: 'Activo', status: true },
+    irrigation: {
+        value: 'Activo',
+        status: true,
+        savingPower: 40,           // Potencia en modo ahorro (0-100%)
+        savingDuration: 15,        // Duración del modo ahorro en minutos
+        abundantDuration: 5        // Duración del modo abundante en minutos
+    },
     temperature: { value: 22, unit: '°C', label: 'Temperatura Actual', min: 18, max: 26 },
     nutrient: { value: 85, unit: '%', label: 'Nivel Actual' },
     light: { value: 'Encendido', status: true, intensity: 80 }
@@ -279,6 +285,10 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
     // Si es irrigación, agregar controles especiales
     if (sensorType === 'irrigation') {
         const isActive = systemData.irrigation.status;
+        const savingPower = systemData.irrigation.savingPower || 40;
+        const abundantDuration = systemData.irrigation.abundantDuration || 5;
+        const savingDuration = systemData.irrigation.savingDuration || 15;
+
         return `
             <div class="circle-progress-container">
                 <div class="circle-icon-large">${icon}</div>
@@ -287,36 +297,80 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
                 </div>
             </div>
             <div class="irrigation-controls">
-                <h3 style="margin: 20px 0 15px 0; color: #333;">Control de Irrigación</h3>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <h3 style="margin: 20px 0 15px 0; color: #333; font-size: 1.2rem;">Control de Irrigación</h3>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
                     <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
-                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #00838f;
-                                   background: ${isActive ? '#00838f' : 'white'};
-                                   color: ${isActive ? 'white' : '#00838f'};
+                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #424242;
+                                   background: ${isActive ? '#424242' : 'white'};
+                                   color: ${isActive ? 'white' : '#424242'};
                                    font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Activar
                     </button>
                     <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
-                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #d32f2f;
-                                   background: ${!isActive ? '#d32f2f' : 'white'};
-                                   color: ${!isActive ? 'white' : '#d32f2f'};
+                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #757575;
+                                   background: ${!isActive ? '#757575' : 'white'};
+                                   color: ${!isActive ? 'white' : '#757575'};
                                    font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Desactivar
                     </button>
                 </div>
-                <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                    <h4 style="margin: 0 0 10px 0; color: #555; font-size: 0.95rem;">Programación</h4>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <label style="font-size: 0.9rem; color: #666;">Intervalo (horas):</label>
-                        <input type="number" id="irrigationInterval" value="2" min="1" max="24"
-                               style="width: 70px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <button onclick="scheduleIrrigation({interval: document.getElementById('irrigationInterval').value})"
-                                style="padding: 8px 16px; background: #00838f; color: white; border: none;
-                                       border-radius: 4px; cursor: pointer; font-weight: 600;">
-                            Programar
-                        </button>
+
+                <!-- Modo de Ahorro de Energía -->
+                <div style="margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600;">⚡ Modo de Ahorro de Energía</h4>
+
+                    <!-- Barra deslizante de potencia -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label style="font-size: 0.9rem; color: #666; font-weight: 500;">Potencia de la bomba:</label>
+                            <span id="powerValue" style="font-size: 1.2rem; font-weight: 700; color: #424242;">${savingPower}%</span>
+                        </div>
+                        <div style="position: relative; height: 40px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 20px; overflow: hidden; border: 2px solid #bdbdbd;">
+                            <div id="powerFill" style="position: absolute; left: 0; top: 0; height: 100%; width: ${savingPower}%; background: linear-gradient(90deg, #616161 0%, #424242 100%); transition: width 0.3s ease; border-radius: 18px;"></div>
+                            <input type="range" id="powerSlider" min="0" max="100" value="${savingPower}"
+                                   oninput="updatePowerSlider(this.value)"
+                                   style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.75rem; color: #999;">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Duración del modo ahorro -->
+                    <div style="margin-top: 15px;">
+                        <label style="font-size: 0.9rem; color: #666; font-weight: 500; display: block; margin-bottom: 8px;">Duración del modo ahorro:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="savingDuration" value="${savingDuration}" min="1" max="120"
+                                   style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem;">
+                            <span style="color: #666; font-size: 0.9rem; white-space: nowrap;">minutos</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Periodo de Irrigación Abundante -->
+                <div style="margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600;">💧 Irrigación Abundante (100%)</h4>
+                    <div>
+                        <label style="font-size: 0.9rem; color: #666; font-weight: 500; display: block; margin-bottom: 8px;">Duración del periodo abundante:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="abundantDuration" value="${abundantDuration}" min="1" max="60"
+                                   style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem;">
+                            <span style="color: #666; font-size: 0.9rem; white-space: nowrap;">minutos</span>
+                        </div>
+                    </div>
+                    <p style="margin: 12px 0 0 0; font-size: 0.8rem; color: #999; line-height: 1.4;">
+                        La bomba funcionará al 100% durante este tiempo, luego cambiará automáticamente al modo de ahorro.
+                    </p>
+                </div>
+
+                <!-- Botón de guardar configuración -->
+                <button onclick="saveIrrigationConfig()"
+                        style="width: 100%; margin-top: 20px; padding: 14px; background: #424242; color: white; border: none;
+                               border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                    Guardar Configuración
+                </button>
             </div>
         `;
     }
@@ -688,6 +742,64 @@ function scheduleIrrigation(schedule) {
     console.log('Programación de irrigación:', schedule);
     // Aquí se implementaría la lógica de programación
     // Por ahora solo lo registramos
+}
+
+// Función para actualizar la barra deslizante de potencia
+function updatePowerSlider(value) {
+    const powerValue = document.getElementById('powerValue');
+    const powerFill = document.getElementById('powerFill');
+
+    if (powerValue) {
+        powerValue.textContent = Math.round(value) + '%';
+    }
+
+    if (powerFill) {
+        powerFill.style.width = value + '%';
+    }
+}
+
+// Función para guardar la configuración de irrigación
+function saveIrrigationConfig() {
+    const powerSlider = document.getElementById('powerSlider');
+    const savingDuration = document.getElementById('savingDuration');
+    const abundantDuration = document.getElementById('abundantDuration');
+
+    const config = {
+        savingPower: powerSlider ? Math.round(powerSlider.value) : 40,
+        savingDuration: savingDuration ? parseInt(savingDuration.value) : 15,
+        abundantDuration: abundantDuration ? parseInt(abundantDuration.value) : 5
+    };
+
+    // Actualizar systemData
+    systemData.irrigation.savingPower = config.savingPower;
+    systemData.irrigation.savingDuration = config.savingDuration;
+    systemData.irrigation.abundantDuration = config.abundantDuration;
+
+    // Enviar al servidor
+    updateServerIrrigationConfig(config);
+
+    // Mostrar mensaje de confirmación
+    alert(`Configuración guardada:\n\n⚡ Potencia en modo ahorro: ${config.savingPower}%\n⏱️ Duración modo ahorro: ${config.savingDuration} min\n💧 Duración irrigación abundante: ${config.abundantDuration} min`);
+}
+
+// Función para enviar configuración al servidor
+async function updateServerIrrigationConfig(config) {
+    try {
+        const response = await fetch('/api/update-irrigation-config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                config: config,
+                timestamp: new Date().toISOString()
+            })
+        });
+        const data = await response.json();
+        console.log('Configuración guardada en servidor:', data);
+    } catch (error) {
+        console.error('Error al guardar configuración:', error);
+    }
 }
 
 // Inicializar visualización de irrigación según estado inicial

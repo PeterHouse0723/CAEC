@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir Sistema CAEC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .add-system-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .system-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .system-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        .system-card h1 {
+            font-size: 1.8rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .system-card p {
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .input-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .method-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .method-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .method-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .method-btn .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-section {
+            display: none;
+        }
+
+        .input-section.active {
+            display: block;
+        }
+
+        .code-input-group {
+            margin-bottom: 25px;
+        }
+
+        .code-input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: monospace;
+            transition: all 0.3s ease;
+        }
+
+        .code-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .qr-scanner {
+            border: 3px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 20px;
+            background: #f7fafc;
+        }
+
+        .qr-scanner .icon {
+            font-size: 4rem;
+            color: #cbd5e0;
+            margin-bottom: 15px;
+        }
+
+        .qr-scanner p {
+            margin: 0;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            display: none;
+            background: #fff5f5;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            border: 1px solid #fc8181;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .skip-link {
+            color: #718096;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .skip-link:hover {
+            color: #4a5568;
+            text-decoration: underline;
+        }
+
+        /* Animación de carga */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .sync-steps {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .sync-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .sync-step.active {
+            opacity: 1;
+        }
+
+        .sync-step .check {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .sync-step.completed .check {
+            background: #48bb78;
+            border-color: #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <div class="add-system-container">
+        <div class="system-card">
+            <div class="system-icon">🌱</div>
+            <h1>Añadir Sistema CAEC</h1>
+            <p>Ingresa el código de tu sistema CAEC o escanea el código QR para comenzar</p>
+
+            <div class="input-methods">
+                <button class="method-btn active" onclick="switchMethod('code')">
+                    <span class="icon">🔢</span>
+                    <span>Código</span>
+                </button>
+                <button class="method-btn" onclick="switchMethod('qr')">
+                    <span class="icon">📷</span>
+                    <span>Escanear QR</span>
+                </button>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <!-- Método de código -->
+            <div id="codeSection" class="input-section active">
+                <form id="codeForm" onsubmit="validateSystem(event)">
+                    <div class="code-input-group">
+                        <input
+                            type="text"
+                            id="systemCode"
+                            name="systemCode"
+                            placeholder="CAEC-2024-XXXX"
+                            pattern="CAEC-\d{4}-[A-Z0-9]+"
+                            required
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button type="submit" class="submit-btn">Validar Sistema</button>
+                </form>
+            </div>
+
+            <!-- Método de QR -->
+            <div id="qrSection" class="input-section">
+                <div class="qr-scanner">
+                    <div class="icon">📷</div>
+                    <p>Posiciona el código QR frente a la cámara</p>
+                </div>
+                <button class="submit-btn" onclick="startQRScan()">Activar Cámara</button>
+            </div>
+
+            <a href="{{ url_for('inicio') }}" class="skip-link">Omitir por ahora</a>
+        </div>
+    </div>
+
+    <!-- Overlay de sincronización -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2 style="margin-bottom: 30px;">Sincronizando Sistema CAEC</h2>
+            <div class="sync-steps">
+                <div class="sync-step" id="step1">
+                    <div class="check">•</div>
+                    <span>Validando código del sistema</span>
+                </div>
+                <div class="sync-step" id="step2">
+                    <div class="check">•</div>
+                    <span>Conectando con el sistema</span>
+                </div>
+                <div class="sync-step" id="step3">
+                    <div class="check">•</div>
+                    <span>Sincronizando sensores</span>
+                </div>
+                <div class="sync-step" id="step4">
+                    <div class="check">•</div>
+                    <span>Configurando parámetros</span>
+                </div>
+                <div class="sync-step" id="step5">
+                    <div class="check">•</div>
+                    <span>Finalizando configuración</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMethod = 'code';
+
+        function switchMethod(method) {
+            currentMethod = method;
+
+            // Actualizar botones
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.method-btn').classList.add('active');
+
+            // Actualizar secciones
+            document.querySelectorAll('.input-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            if (method === 'code') {
+                document.getElementById('codeSection').classList.add('active');
+            } else {
+                document.getElementById('qrSection').classList.add('active');
+            }
+
+            // Ocultar mensaje de error
+            hideError();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.remove('show');
+        }
+
+        async function validateSystem(event) {
+            event.preventDefault();
+            hideError();
+
+            const systemCode = document.getElementById('systemCode').value.trim().toUpperCase();
+
+            if (!systemCode) {
+                showError('Por favor ingresa un código de sistema');
+                return;
+            }
+
+            // Validar formato
+            const pattern = /^CAEC-\d{4}-[A-Z0-9]+$/;
+            if (!pattern.test(systemCode)) {
+                showError('Formato de código inválido. Ejemplo: CAEC-2024-0001');
+                return;
+            }
+
+            // Mostrar overlay de sincronización
+            startSyncAnimation(systemCode);
+        }
+
+        async function startSyncAnimation(systemCode) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('show');
+
+            const steps = [
+                { id: 'step1', duration: 800 },
+                { id: 'step2', duration: 1000 },
+                { id: 'step3', duration: 1200 },
+                { id: 'step4', duration: 900 },
+                { id: 'step5', duration: 700 }
+            ];
+
+            let totalTime = 0;
+
+            for (let step of steps) {
+                await new Promise(resolve => setTimeout(resolve, totalTime));
+                const stepElement = document.getElementById(step.id);
+                stepElement.classList.add('active');
+
+                await new Promise(resolve => setTimeout(resolve, step.duration));
+                stepElement.classList.add('completed');
+                stepElement.querySelector('.check').textContent = '✓';
+
+                totalTime += step.duration;
+            }
+
+            // Validar con el servidor
+            try {
+                const response = await fetch('/api/validate-system', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ codigo_sistema: systemCode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Vincular sistema
+                    const linkResponse = await fetch('/api/link-system', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ codigo_sistema: systemCode })
+                    });
+
+                    const linkData = await linkResponse.json();
+
+                    if (linkData.success) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        window.location.href = '/inicio';
+                    } else {
+                        throw new Error(linkData.message || 'Error al vincular sistema');
+                    }
+                } else {
+                    throw new Error(data.message || 'Sistema no válido');
+                }
+            } catch (error) {
+                overlay.classList.remove('show');
+                showError(error.message);
+
+                // Reset steps
+                document.querySelectorAll('.sync-step').forEach(step => {
+                    step.classList.remove('active', 'completed');
+                    step.querySelector('.check').textContent = '•';
+                });
+            }
+        }
+
+        function startQRScan() {
+            // Simulación de escaneo QR - en producción usar una librería de QR
+            showError('Funcionalidad de QR en desarrollo. Por favor usa el código manual.');
+        }
+    </script>
+</body>
+</html>

@@ -28,103 +28,169 @@
             <!-- Visualización Resumen del Sistema CAEC -->
             <div class="system-overview">
                 <svg class="caec-system-diagram" viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Torre Hidropónica Principal -->
-                    <g id="tower">
-                        <!-- Estructura de la torre -->
-                        <rect x="400" y="160" width="400" height="640" fill="none" stroke="#1976d2" stroke-width="6" rx="12"/>
+                    <!-- Definiciones -->
+                    <defs>
+                        <!-- Gradiente para el agua -->
+                        <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1976d2;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#42a5f5;stop-opacity:0.8" />
+                        </linearGradient>
 
-                        <!-- Columna de agua de irrigación (oculta por defecto) -->
+                        <!-- Gradiente para contenedores transparentes -->
+                        <linearGradient id="containerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.7" />
+                            <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#e8f4f8;stop-opacity:0.7" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Torre Hidropónica Vertical -->
+                    <g id="tower">
+                        <!-- Tapa superior circular -->
+                        <ellipse cx="600" cy="70" rx="65" ry="20" fill="#b0bec5" stroke="#78909c" stroke-width="2"/>
+                        <circle cx="600" cy="60" r="8" fill="#90a4ae"/>
+
+                        <!-- Tubería Central (más delgada y centrada) -->
+                        <rect x="585" y="70" width="30" height="730" fill="#37474f" stroke="#263238" stroke-width="3" rx="3"/>
+
+                        <!-- 5 Niveles de contenedores transparentes -->
+                        <!-- Nivel 1 -->
+                        <g id="level1">
+                            <rect x="450" y="120" width="300" height="120" fill="url(#containerGradient)" stroke="#b0bec5" stroke-width="2.5" rx="8" opacity="0.85"/>
+                            <line x1="450" y1="180" x2="750" y2="180" stroke="#cfd8dc" stroke-width="1.5" opacity="0.5"/>
+                            <!-- Plantas verdes -->
+                            <circle cx="490" cy="100" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="475" cy="85" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="505" cy="85" r="25" fill="#81c784" opacity="0.9"/>
+
+                            <circle cx="710" cy="100" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="695" cy="85" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="725" cy="85" r="25" fill="#81c784" opacity="0.9"/>
+                        </g>
+
+                        <!-- Nivel 2 -->
+                        <g id="level2">
+                            <rect x="450" y="260" width="300" height="120" fill="url(#containerGradient)" stroke="#b0bec5" stroke-width="2.5" rx="8" opacity="0.85"/>
+                            <line x1="450" y1="320" x2="750" y2="320" stroke="#cfd8dc" stroke-width="1.5" opacity="0.5"/>
+                            <circle cx="490" cy="240" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="475" cy="225" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="505" cy="225" r="25" fill="#81c784" opacity="0.9"/>
+
+                            <circle cx="710" cy="240" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="695" cy="225" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="725" cy="225" r="25" fill="#81c784" opacity="0.9"/>
+                        </g>
+
+                        <!-- Nivel 3 -->
+                        <g id="level3">
+                            <rect x="450" y="400" width="300" height="120" fill="url(#containerGradient)" stroke="#b0bec5" stroke-width="2.5" rx="8" opacity="0.85"/>
+                            <line x1="450" y1="460" x2="750" y2="460" stroke="#cfd8dc" stroke-width="1.5" opacity="0.5"/>
+                            <circle cx="490" cy="380" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="475" cy="365" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="505" cy="365" r="25" fill="#81c784" opacity="0.9"/>
+
+                            <circle cx="710" cy="380" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="695" cy="365" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="725" cy="365" r="25" fill="#81c784" opacity="0.9"/>
+                        </g>
+
+                        <!-- Nivel 4 -->
+                        <g id="level4">
+                            <rect x="450" y="540" width="300" height="120" fill="url(#containerGradient)" stroke="#b0bec5" stroke-width="2.5" rx="8" opacity="0.85"/>
+                            <line x1="450" y1="600" x2="750" y2="600" stroke="#cfd8dc" stroke-width="1.5" opacity="0.5"/>
+                            <circle cx="490" cy="520" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="475" cy="505" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="505" cy="505" r="25" fill="#81c784" opacity="0.9"/>
+
+                            <circle cx="710" cy="520" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="695" cy="505" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="725" cy="505" r="25" fill="#81c784" opacity="0.9"/>
+                        </g>
+
+                        <!-- Nivel 5 (inferior) -->
+                        <g id="level5">
+                            <rect x="450" y="680" width="300" height="120" fill="url(#containerGradient)" stroke="#b0bec5" stroke-width="2.5" rx="8" opacity="0.85"/>
+                            <line x1="450" y1="740" x2="750" y2="740" stroke="#cfd8dc" stroke-width="1.5" opacity="0.5"/>
+                            <circle cx="490" cy="660" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="475" cy="645" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="505" cy="645" r="25" fill="#81c784" opacity="0.9"/>
+
+                            <circle cx="710" cy="660" r="32" fill="#66bb6a" opacity="0.95"/>
+                            <circle cx="695" cy="645" r="25" fill="#81c784" opacity="0.9"/>
+                            <circle cx="725" cy="645" r="25" fill="#81c784" opacity="0.9"/>
+                        </g>
+
+                        <!-- Columna de agua de irrigación (animada, oculta por defecto) -->
                         <g id="irrigationColumn" style="display: none;">
-                            <!-- Tubería de agua central -->
-                            <rect x="590" y="800" width="20" height="0" fill="url(#waterGradient)" class="water-column">
-                                <animate id="waterRise" attributeName="height" from="0" to="640" dur="2s" fill="freeze" begin="indefinite"/>
-                                <animate id="waterRiseY" attributeName="y" from="800" to="160" dur="2s" fill="freeze" begin="indefinite"/>
+                            <rect x="588" y="800" width="24" height="0" fill="url(#waterGradient)" class="water-column">
+                                <animate id="waterRise" attributeName="height" from="0" to="730" dur="2s" fill="freeze" begin="indefinite"/>
+                                <animate id="waterRiseY" attributeName="y" from="800" to="70" dur="2s" fill="freeze" begin="indefinite"/>
                             </rect>
 
                             <!-- Efecto de salpicado en la parte superior -->
                             <g id="splashEffect" style="opacity: 0;">
-                                <circle cx="580" cy="140" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash1"/>
-                                <circle cx="600" cy="135" r="5" fill="#42a5f5" opacity="0.7" class="splash-drop splash2"/>
-                                <circle cx="620" cy="140" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash3"/>
-                                <circle cx="590" cy="145" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash4"/>
-                                <circle cx="610" cy="142" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash5"/>
+                                <circle cx="590" cy="50" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash1"/>
+                                <circle cx="600" cy="45" r="5" fill="#42a5f5" opacity="0.7" class="splash-drop splash2"/>
+                                <circle cx="610" cy="50" r="4" fill="#42a5f5" opacity="0.7" class="splash-drop splash3"/>
+                                <circle cx="595" cy="55" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash4"/>
+                                <circle cx="605" cy="52" r="3" fill="#42a5f5" opacity="0.7" class="splash-drop splash5"/>
                             </g>
                         </g>
-
-                        <!-- Gradiente para el agua -->
-                        <defs>
-                            <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#1976d2;stop-opacity:0.6" />
-                                <stop offset="100%" style="stop-color:#42a5f5;stop-opacity:0.8" />
-                            </linearGradient>
-                        </defs>
-
-                        <!-- Niveles de plantas en la torre -->
-                        <line x1="400" y1="320" x2="800" y2="320" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
-                        <line x1="400" y1="480" x2="800" y2="480" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
-                        <line x1="400" y1="640" x2="800" y2="640" stroke="#90caf9" stroke-width="2.5" opacity="0.4"/>
-
-                        <!-- Plantas distribuidas en niveles -->
-                        <circle cx="460" cy="220" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="740" cy="240" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="480" cy="380" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="720" cy="400" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="460" cy="540" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="740" cy="560" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="480" cy="700" r="28" fill="#4caf50" opacity="0.9"/>
-                        <circle cx="720" cy="720" r="28" fill="#4caf50" opacity="0.9"/>
                     </g>
 
-                    <!-- Tanque de Agua conectado directamente a la torre -->
+                    <!-- Tanque de Agua Principal -->
                     <g id="waterTank">
-                        <!-- Contenedor del tanque (sin separación) -->
-                        <rect x="300" y="800" width="600" height="360" fill="#e3f2fd" stroke="#1976d2" stroke-width="6" rx="12"/>
+                        <!-- Contenedor principal del tanque (azul) -->
+                        <rect x="350" y="820" width="500" height="340" fill="#64b5f6" stroke="#1976d2" stroke-width="5" rx="12"/>
+
+                        <!-- Nivel de agua dentro del tanque -->
+                        <rect x="355" y="900" width="490" height="255" fill="#42a5f5" opacity="0.7" rx="8"/>
 
                         <!-- Clip para las olas -->
                         <clipPath id="tankClip">
-                            <rect x="300" y="800" width="600" height="360" rx="12"/>
+                            <rect x="350" y="820" width="500" height="340" rx="12"/>
                         </clipPath>
 
-                        <!-- Olas animadas que suben y bajan -->
+                        <!-- Olas animadas -->
                         <g clip-path="url(#tankClip)">
                             <g id="waterWaves" class="system-waves">
-                                <ellipse class="system-wave system-wave1" cx="600" cy="1000" rx="360" ry="50" fill="rgba(25, 118, 210, 0.3)"/>
-                                <ellipse class="system-wave system-wave2" cx="600" cy="1010" rx="360" ry="50" fill="rgba(25, 118, 210, 0.2)"/>
-                                <ellipse class="system-wave system-wave3" cx="600" cy="1020" rx="360" ry="50" fill="rgba(25, 118, 210, 0.15)"/>
-                                <!-- Relleno de agua debajo de las olas -->
-                                <rect id="waterFill" x="300" y="1000" width="600" height="160" fill="rgba(25, 118, 210, 0.2)"/>
+                                <ellipse class="system-wave system-wave1" cx="600" cy="895" rx="280" ry="35" fill="rgba(255, 255, 255, 0.3)"/>
+                                <ellipse class="system-wave system-wave2" cx="600" cy="903" rx="280" ry="35" fill="rgba(255, 255, 255, 0.2)"/>
+                                <ellipse class="system-wave system-wave3" cx="600" cy="911" rx="280" ry="35" fill="rgba(255, 255, 255, 0.15)"/>
                             </g>
+                        </g>
+
+                        <!-- Bomba de Irrigación dentro del tanque -->
+                        <g id="pump">
+                            <rect x="560" y="1080" width="80" height="60" fill="#37474f" stroke="#263238" stroke-width="3" rx="6"/>
+                            <circle cx="600" cy="1110" r="22" fill="#546e7a" stroke="#263238" stroke-width="2"/>
+                            <rect x="595" y="1050" width="10" height="30" fill="#37474f" stroke="#263238" stroke-width="2"/>
+                            <!-- Conexión con tubería central -->
+                            <rect x="595" y="800" width="10" height="250" fill="#37474f" stroke="#263238" stroke-width="2"/>
                         </g>
                     </g>
 
-                    <!-- Indicadores Minimalistas -->
-
-                    <!-- Indicador de Nivel de Agua -->
+                    <!-- Indicadores Externos Minimalistas -->
                     <g id="waterLevelIndicator">
-                        <line x1="920" y1="980" x2="1040" y2="980" stroke="#1976d2" stroke-width="3"/>
-                        <circle cx="920" cy="980" r="6" fill="#1976d2"/>
-                        <text x="1050" y="970" font-size="24" fill="#666" font-weight="500">Nivel de Agua</text>
-                        <text id="waterLevelText" x="1050" y="1005" font-size="40" fill="#1976d2" font-weight="bold">75%</text>
+                        <line x1="870" y1="1000" x2="950" y2="1000" stroke="#1976d2" stroke-width="3"/>
+                        <circle cx="870" cy="1000" r="6" fill="#1976d2"/>
+                        <text x="960" y="995" font-size="20" fill="#666" font-weight="500">Nivel</text>
+                        <text id="waterLevelText" x="960" y="1020" font-size="36" fill="#1976d2" font-weight="bold">75%</text>
                     </g>
 
-                    <!-- Indicador de pH -->
                     <g id="phIndicator">
-                        <line x1="280" y1="980" x2="160" y2="980" stroke="#ec407a" stroke-width="3"/>
-                        <circle cx="280" cy="980" r="6" fill="#ec407a"/>
-                        <text x="150" y="970" text-anchor="end" font-size="24" fill="#666" font-weight="500">Nivel pH</text>
-                        <text id="phValueText" x="150" y="1005" text-anchor="end" font-size="40" fill="#ec407a" font-weight="bold">7</text>
+                        <line x1="330" y1="1000" x2="250" y2="1000" stroke="#ec407a" stroke-width="3"/>
+                        <circle cx="330" cy="1000" r="6" fill="#ec407a"/>
+                        <text x="240" y="995" text-anchor="end" font-size="20" fill="#666" font-weight="500">pH</text>
+                        <text id="phValueText" x="240" y="1020" text-anchor="end" font-size="36" fill="#ec407a" font-weight="bold">6.5</text>
                     </g>
 
-                    <!-- Indicador de Nutrientes -->
                     <g id="nutrientIndicator">
-                        <line x1="600" y1="1180" x2="600" y2="1260" stroke="#ab47bc" stroke-width="3"/>
+                        <line x1="600" y1="1180" x2="600" y2="1240" stroke="#ab47bc" stroke-width="3"/>
                         <circle cx="600" cy="1180" r="6" fill="#ab47bc"/>
-                        <text x="600" y="1295" text-anchor="middle" font-size="24" fill="#666" font-weight="500">Nutrientes</text>
-                        <text id="nutrientValueText" x="600" y="1335" text-anchor="middle" font-size="40" fill="#ab47bc" font-weight="bold">85%</text>
+                        <text x="600" y="1270" text-anchor="middle" font-size="20" fill="#666" font-weight="500">Nutrientes</text>
+                        <text id="nutrientValueText" x="600" y="1300" text-anchor="middle" font-size="36" fill="#ab47bc" font-weight="bold">85%</text>
                     </g>
-
-                    <!-- Tubería conectando torre con tanque -->
-                    <path d="M 300 400 L 300 400" stroke="#1976d2" stroke-width="3" fill="none"/>
                 </svg>
             </div>
 
