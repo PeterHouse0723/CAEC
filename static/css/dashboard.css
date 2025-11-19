@@ -80,7 +80,7 @@ body {
 
 /* Visualización del Sistema CAEC Completo */
 .system-overview {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto var(--spacing-xl) auto;
     padding: var(--spacing-lg);
     background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);

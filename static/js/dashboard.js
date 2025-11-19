@@ -670,6 +670,18 @@ async function fetchDataFromServer() {
 
 // ===== FUNCIONES DE CONTROL DE IRRIGACIÓN =====
 
+// Nueva función para el interruptor rápido
+function toggleIrrigationState(event) {
+    // 1. Detener la propagación para no abrir el modal
+    event.stopPropagation();
+
+    // 2. Invertir el estado actual
+    const newStatus = !systemData.irrigation.status;
+
+    // 3. Llamar a la función principal que actualiza todo
+    toggleIrrigation(newStatus);
+}
+
 // Función para activar/desactivar irrigación
 function toggleIrrigation(activate) {
     systemData.irrigation.status = activate;

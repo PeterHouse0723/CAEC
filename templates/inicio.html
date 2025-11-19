@@ -203,6 +203,8 @@
 
                         <!-- Bomba (oculta por defecto, solo visible cuando irrigación activa) -->
                         <g id="pump" style="display: none;">
+                            <!-- Tubo de conexión -->
+                            <rect x="590" y="800" width="20" height="250" fill="#37474f" stroke="#263238" stroke-width="2" />
                             <rect x="560" y="1050" width="80" height="60" fill="#37474f" stroke="#263238" stroke-width="3" rx="6"/>
                             <circle cx="600" cy="1080" r="22" fill="#546e7a" stroke="#263238" stroke-width="2"/>
                         </g>
@@ -268,7 +270,7 @@
                     <button class="sensor-card irrigation-card" data-sensor="irrigation" onclick="openSensorModal('irrigation')">
                         <div class="card-icon">🚿</div>
                         <h3 class="card-title">Irrigación</h3>
-                        <div class="card-value">
+                        <div class="card-value" onclick="toggleIrrigationState(event)" style="cursor: pointer;">
                             <span class="value-text" id="irrigationValue">Activo</span>
                         </div>
                         <div class="water-drop drop1"></div>
