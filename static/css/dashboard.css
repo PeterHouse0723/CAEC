@@ -1,7 +1,11 @@
 /* Estilos modernos para el dashboard CAEC */
 
 body {
-    background: #ffffff;
+    background-image: url('../img/fondo_inicio.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     min-height: 100vh;
 }
 
@@ -11,54 +15,91 @@ body {
     flex-direction: column;
 }
 
-/* Header */
-.dashboard-header {
-    background: #f8f9fa;
-    color: var(--text-primary);
-    padding: var(--spacing-md) var(--spacing-lg);
+/* Nueva Barra de Navegación Superior */
+.top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 2rem;
+    background: rgba(255, 255, 255, 0.3); /* Fondo translúcido */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.header-left {
+.nav-left .logo {
+    height: 50px;
+    width: auto;
+}
+
+.nav-right {
+    position: relative;
+}
+
+.profile-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #0d47a1; /* Azul oscuro CAEC */
+    color: white;
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
 }
 
-.header-left h1 {
-    font-size: 1.8rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.profile-circle:hover {
+    transform: scale(1.05);
 }
 
-.status-indicator {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 60px; /* Espacio desde el círculo */
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    z-index: 1;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
 }
 
-.status-indicator.online {
-    background-color: rgba(46, 204, 113, 0.15);
-    color: var(--success-color);
-    border: 2px solid var(--success-color);
+.dropdown-menu a {
+    color: #333;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
+.dropdown-menu a:hover {
+    background-color: #f5f5f5;
 }
 
-.user-name {
-    font-weight: 600;
-    color: var(--text-primary);
+.dropdown-divider {
+    height: 1px;
+    margin: 8px 0;
+    background-color: #e0e0e0;
+}
+
+.dropdown-menu.show {
+    display: block;
 }
 
 /* Main Content */
@@ -83,9 +124,12 @@ body {
     max-width: 1100px;
     margin: 0 auto var(--spacing-xl) auto;
     padding: var(--spacing-lg);
-    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .caec-system-diagram {
@@ -206,14 +250,16 @@ body {
 /* Tarjeta de sensor base - Estilo minimalista */
 .sensor-card {
     position: relative;
-    background: white;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 1.5rem;
     min-height: 200px;
     width: 100%;
-    border: none;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
     text-align: center;
@@ -269,12 +315,6 @@ body {
 }
 
 /* Tarjeta de Agua con animación de olas - Escala de Grises */
-.water-card {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
-}
-
 .water-card .card-title,
 .water-card .value-number,
 .water-card .value-unit {
@@ -333,12 +373,6 @@ body {
 }
 
 /* Tarjeta de pH - Escala de Grises */
-.ph-card {
-    background: linear-gradient(135deg, #fafafa 0%, #eeeeee 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
-}
-
 .ph-card .card-title,
 .ph-card .value-number,
 .ph-card .value-unit {
@@ -346,12 +380,6 @@ body {
 }
 
 /* Tarjeta de Irrigación - Escala de Grises */
-.irrigation-card {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
-}
-
 .irrigation-card .card-title,
 .irrigation-card .value-text {
     color: #424242;
@@ -396,12 +424,6 @@ body {
 }
 
 /* Tarjeta de Temperatura - Escala de Grises */
-.temperature-card {
-    background: linear-gradient(135deg, #fafafa 0%, #eeeeee 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
-}
-
 .temperature-card .card-title,
 .temperature-card .value-number,
 .temperature-card .value-unit {
@@ -409,64 +431,53 @@ body {
 }
 
 /* Tarjeta de Nutrientes - Escala de Grises */
-.nutrient-card {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
-}
-
 .nutrient-card .card-title,
 .nutrient-card .value-number,
 .nutrient-card .value-unit {
     color: #424242;
 }
 
-/* Tarjeta de Iluminación - Escala de Grises */
-.light-card {
-    background: linear-gradient(135deg, #fafafa 0%, #eeeeee 100%);
-    color: var(--text-primary);
-    border: 2px solid #bdbdbd;
+/* Tarjeta de Cosecha */
+.harvest-card .card-icon {
+    color: #388e3c; /* Verde oscuro */
 }
 
-.light-card .card-title,
-.light-card .value-text {
+#harvestCountdown {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.05);
+    padding: 0.5rem;
+    border-radius: 8px;
+    min-width: 50px;
+}
+
+.countdown-item span {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2e7d32; /* Verde más oscuro */
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    color: #616161;
+    margin-top: 0.2rem;
+    text-transform: uppercase;
+}
+
+.harvest-date {
+    margin-top: 1rem;
+    font-size: 0.85rem;
     color: #424242;
-}
-
-.light-rays {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 120px;
-    height: 120px;
-    transform: translate(-50%, -50%);
-    opacity: 0.1;
-    animation: rotate 8s linear infinite;
-}
-
-.light-rays::before,
-.light-rays::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 2px;
-    background: rgba(97, 97, 97, 0.2);
-    transform: translate(-50%, -50%);
-}
-
-.light-rays::after {
-    transform: translate(-50%, -50%) rotate(90deg);
-}
-
-@keyframes rotate {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
+    font-weight: 500;
 }
 
 /* Modal */
@@ -484,7 +495,10 @@ body {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     margin: 5% auto;
     padding: var(--spacing-xl);
     border-radius: 24px;

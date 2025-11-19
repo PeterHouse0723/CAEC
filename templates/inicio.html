@@ -9,17 +9,26 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="header-left">
-                <h1>CAEC</h1>
-                <span class="status-indicator online">Sistema Activo</span>
+        <!-- Barra de Navegación Superior -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="Logo CAEC" class="logo">
             </div>
-            <div class="header-right">
-                <span class="user-name">Usuario</span>
-                <a href="{{ url_for('login') }}" class="btn btn-small">Cerrar Sesión</a>
+            <div class="nav-right">
+                <div class="profile-menu">
+                    <div class="profile-circle" onclick="toggleProfileMenu()">
+                        <span class="profile-initial">U</span>
+                    </div>
+                    <div class="dropdown-menu" id="profileDropdown">
+                        <a href="#">Cuenta</a>
+                        <a href="#">Sistemas CAEC</a>
+                        <a href="#">Configuración</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('login') }}">Salir</a>
+                    </div>
+                </div>
             </div>
-        </header>
+        </nav>
 
         <!-- Main Content -->
         <main class="dashboard-main">
@@ -318,15 +327,30 @@
                     </button>
                 </div>
 
-                <!-- Contenedor Tarjeta Iluminación -->
+                <!-- Contenedor Tarjeta Próxima Cosecha -->
                 <div class="card-wrapper">
-                    <button class="sensor-card light-card" data-sensor="light" onclick="openSensorModal('light')">
-                        <div class="card-icon">💡</div>
-                        <h3 class="card-title">Iluminación</h3>
-                        <div class="card-value">
-                            <span class="value-text" id="lightValue">Encendido</span>
+                    <button class="sensor-card harvest-card" data-sensor="harvest" onclick="openSensorModal('harvest')">
+                        <div class="card-icon">🌾</div>
+                        <h3 class="card-title">Próxima Cosecha</h3>
+                        <div id="harvestCountdown">
+                            <div class="countdown-item">
+                                <span id="days">00</span>
+                                <div class="countdown-label">Días</div>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="hours">00</span>
+                                <div class="countdown-label">Horas</div>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="minutes">00</span>
+                                <div class="countdown-label">Min</div>
+                            </div>
+                            <div class="countdown-item">
+                                <span id="seconds">00</span>
+                                <div class="countdown-label">Seg</div>
+                            </div>
                         </div>
-                        <div class="light-rays"></div>
+                        <div class="harvest-date" id="harvestDate">Fecha: --/--/----</div>
                     </button>
                 </div>
             </div>

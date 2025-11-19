@@ -815,3 +815,78 @@ document.addEventListener('DOMContentLoaded', () => {
     updateIrrigationVisualization(systemData.irrigation.status);
     updateCardValues();
 });
+
+
+// ===== NUEVA FUNCIONALIDAD: MENÚ DE PERFIL Y CONTADOR DE COSECHA =====
+
+/**
+ * Muestra u oculta el menú desplegable del perfil.
+ */
+function toggleProfileMenu() {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+/**
+ * Inicia el contador regresivo para la cosecha.
+ */
+function startHarvestCountdown() {
+    // Fecha estimada de cosecha (puedes cambiarla o hacerla dinámica)
+    const harvestDate = new Date('2025-12-20T18:00:00');
+    
+    const harvestDateElement = document.getElementById('harvestDate');
+    if(harvestDateElement) {
+        const formattedDate = harvestDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        harvestDateElement.textContent = `Fecha: ${formattedDate}`;
+    }
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
+    const interval = setInterval(() => {
+        const now = new Date();
+        const distance = harvestDate.getTime() - now.getTime();
+
+        if (distance < 0) {
+            clearInterval(interval);
+            document.getElementById('harvestCountdown').innerHTML = "<div style='font-size: 1.2rem; font-weight: bold; color: #388e3c;'>¡Cosecha Lista!</div>";
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        daysEl.textContent = String(days).padStart(2, '0');
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minutesEl.textContent = String(minutes).padStart(2, '0');
+        secondsEl.textContent = String(seconds).padStart(2, '0');
+    }, 1000);
+}
+
+// Event Listeners adicionales
+document.addEventListener('DOMContentLoaded', function() {
+    // Iniciar contador de cosecha
+    startHarvestCountdown();
+
+    // Cerrar el menú de perfil si se hace clic fuera de él
+    window.onclick = function(event) {
+        if (!event.target.matches('.profile-circle')) {
+            const dropdowns = document.getElementsByClassName('dropdown-menu');
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+});
+
