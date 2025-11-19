@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - CAEC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+</head>
+<body class="settings-page">
+    <!-- Logo CAEC flotante -->
+    <div class="page-logo">
+        <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="CAEC">
+    </div>
+
+    <div class="settings-container">
+        <div class="settings-card">
+            <!-- Header -->
+            <div class="settings-header">
+                <h1>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m5.2-10.2l-4.2 4.2m0 0l-4.2-4.2M1 12h6m6 0h6"></path>
+                        <path d="M19.07 4.93l-4.24 4.24m0 5.66l4.24 4.24M4.93 4.93l4.24 4.24m5.66 0l-4.24 4.24"></path>
+                    </svg>
+                    Configuración
+                </h1>
+                <a href="{{ url_for('inicio') }}" class="back-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Volver
+                </a>
+            </div>
+
+            <!-- Mensajes de alerta -->
+            {% if success %}
+            <div class="alert alert-success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                {{ success }}
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-error">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form id="passwordForm" method="POST" action="{{ url_for('change_password') }}">
+                <!-- Cambiar Contraseña -->
+                <div class="form-section">
+                    <h3>Cambiar Contraseña</h3>
+
+                    <div class="form-group">
+                        <label for="current_password">Contraseña Actual</label>
+                        <input type="password" id="current_password" name="current_password" required placeholder="Ingresa tu contraseña actual">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">Nueva Contraseña</label>
+                        <input type="password" id="new_password" name="new_password" required placeholder="Mínimo 8 caracteres">
+                        <small style="color: #718096; font-size: 0.85rem; display: block; margin-top: 5px;">
+                            La contraseña debe tener al menos 8 caracteres
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmar Nueva Contraseña</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirma tu nueva contraseña">
+                    </div>
+
+                    <!-- Indicador de fortaleza de contraseña -->
+                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText"></span>
+                    </div>
+                </div>
+
+                <!-- Información de seguridad -->
+                <div class="alert alert-info">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <div>
+                        <strong>Recomendaciones de seguridad:</strong>
+                        <ul style="margin: 5px 0 0 20px; font-size: 0.9rem;">
+                            <li>Usa una combinación de letras, números y símbolos</li>
+                            <li>No utilices información personal obvia</li>
+                            <li>Cambia tu contraseña periódicamente</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('inicio') }}'">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .password-strength {
+            margin-top: 10px;
+        }
+
+        .strength-bar {
+            height: 8px;
+            background: rgba(200, 200, 200, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .strength-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .strength-weak .strength-fill {
+            width: 33%;
+            background: #f56565;
+        }
+
+        .strength-medium .strength-fill {
+            width: 66%;
+            background: #ed8936;
+        }
+
+        .strength-strong .strength-fill {
+            width: 100%;
+            background: #48bb78;
+        }
+
+        .strength-weak .strength-text {
+            color: #c53030;
+        }
+
+        .strength-medium .strength-text {
+            color: #c05621;
+        }
+
+        .strength-strong .strength-text {
+            color: #22543d;
+        }
+    </style>
+
+    <script>
+        const newPasswordInput = document.getElementById('new_password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        const form = document.getElementById('passwordForm');
+
+        // Validar fortaleza de contraseña
+        newPasswordInput.addEventListener('input', function() {
+            const password = this.value;
+
+            if (password.length > 0) {
+                passwordStrength.style.display = 'block';
+
+                let strength = 0;
+
+                // Longitud
+                if (password.length >= 8) strength += 1;
+                if (password.length >= 12) strength += 1;
+
+                // Complejidad
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 1;
+                if (/[0-9]/.test(password)) strength += 1;
+                if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+
+                // Determinar nivel
+                passwordStrength.className = 'password-strength';
+                if (strength <= 2) {
+                    passwordStrength.classList.add('strength-weak');
+                    strengthText.textContent = 'Débil';
+                } else if (strength <= 4) {
+                    passwordStrength.classList.add('strength-medium');
+                    strengthText.textContent = 'Media';
+                } else {
+                    passwordStrength.classList.add('strength-strong');
+                    strengthText.textContent = 'Fuerte';
+                }
+            } else {
+                passwordStrength.style.display = 'none';
+            }
+        });
+
+        // Validar que las contraseñas coincidan
+        form.addEventListener('submit', function(e) {
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden. Por favor, verifica e intenta de nuevo.');
+                confirmPasswordInput.focus();
+                return false;
+            }
+
+            if (newPassword.length < 8) {
+                e.preventDefault();
+                alert('La nueva contraseña debe tener al menos 8 caracteres.');
+                newPasswordInput.focus();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

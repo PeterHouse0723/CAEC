@@ -6,22 +6,65 @@
     <title>Registro - Sistema CAEC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
+        body {
+            background-image: url("{{ url_for('static', filename='img/fondo_login.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .register-logo-top {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .register-logo-top img {
+            height: 100px;
+            width: auto;
+            filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .register-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
         .register-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .register-header {
@@ -30,14 +73,18 @@
         }
 
         .register-header h1 {
-            color: #2d3748;
+            color: #1a1a1a;
             font-size: 2rem;
             margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
         }
 
         .register-header p {
-            color: #718096;
+            color: #2d3748;
             font-size: 0.95rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
         }
 
         .form-group {
@@ -46,7 +93,7 @@
 
         .form-group label {
             display: block;
-            color: #4a5568;
+            color: #1a1a1a;
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 0.9rem;
@@ -126,8 +173,9 @@
         .login-link {
             text-align: center;
             margin-top: 20px;
-            color: #718096;
+            color: #1a1a1a;
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .login-link a {
@@ -171,6 +219,11 @@
     </style>
 </head>
 <body>
+    <!-- Logo CAEC en la parte superior -->
+    <div class="register-logo-top">
+        <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="CAEC">
+    </div>
+
     <div class="register-container">
         <div class="register-card">
             <div class="register-header">

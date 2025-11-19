@@ -11,10 +11,10 @@ app.secret_key = 'caec_secret_key_2024'  # Cambiar en producción
 # Inicializar base de datos al iniciar la aplicación
 init_db()
 
-# Ruta para la página de inicio/bienvenida
+# Ruta para la página de inicio - redirige directamente al login
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('login'))
 
 # Ruta para la página de registro
 @app.route('/register', methods=['GET', 'POST'])
@@ -239,6 +239,173 @@ def link_system():
             'success': False,
             'message': 'Error al vincular el sistema. Puede que ya esté en uso.'
         })
+
+# Ruta para Mi Cuenta
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener datos del usuario
+    from database import obtener_usuario_por_id
+    user = obtener_usuario_por_id(session['user_id'])
+
+    if not user:
+        return redirect(url_for('login'))
+
+    return render_template('account.html', user=user)
+
+# Ruta para actualizar cuenta
+@app.route('/update_account', methods=['POST'])
+def update_account():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener datos del formulario
+    nombre = request.form.get('nombre')
+    apellido = request.form.get('apellido')
+    telefono = request.form.get('telefono')
+    celular = request.form.get('celular')
+    direccion = request.form.get('direccion')
+    ciudad = request.form.get('ciudad')
+    codigo_postal = request.form.get('codigo_postal')
+    pais = request.form.get('pais')
+
+    # Actualizar en la base de datos
+    from database import actualizar_usuario
+    success = actualizar_usuario(
+        session['user_id'],
+        nombre, apellido, telefono, celular,
+        direccion, ciudad, codigo_postal, pais
+    )
+
+    # Obtener datos actualizados
+    from database import obtener_usuario_por_id
+    user = obtener_usuario_por_id(session['user_id'])
+
+    # Actualizar nombre en sesión
+    if success:
+        session['user_name'] = f"{nombre} {apellido}"
+        return render_template('account.html', user=user, success='Información actualizada correctamente')
+    else:
+        return render_template('account.html', user=user, error='Error al actualizar la información')
+
+# Ruta para Configuración
+@app.route('/config', methods=['GET', 'POST'])
+def config():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    return render_template('config.html')
+
+# Ruta para cambiar contraseña
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+
+    # Validaciones
+    if new_password != confirm_password:
+        return render_template('config.html', error='Las contraseñas no coinciden')
+
+    if len(new_password) < 8:
+        return render_template('config.html', error='La nueva contraseña debe tener al menos 8 caracteres')
+
+    # Verificar contraseña actual
+    from database import verificar_usuario, cambiar_password
+    usuario = verificar_usuario(session['user_email'], current_password)
+
+    if not usuario:
+        return render_template('config.html', error='La contraseña actual es incorrecta')
+
+    # Cambiar contraseña
+    success = cambiar_password(session['user_id'], new_password)
+
+    if success:
+        return render_template('config.html', success='Contraseña cambiada correctamente')
+    else:
+        return render_template('config.html', error='Error al cambiar la contraseña')
+
+# Ruta para Sistemas CAEC
+@app.route('/systems')
+def systems():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener todos los sistemas del usuario
+    from database import obtener_todos_sistemas_usuario, obtener_sistema_activo
+
+    active_system = obtener_sistema_activo(session['user_id'])
+    other_systems = obtener_todos_sistemas_usuario(session['user_id'], exclude_active=True)
+
+    return render_template('systems.html', active_system=active_system, other_systems=other_systems)
+
+# Ruta para agregar nuevo sistema
+@app.route('/add_system', methods=['POST'])
+def add_new_system():
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    nombre = request.form.get('nombre')
+    ubicacion = request.form.get('ubicacion')
+    tipo_sistema = request.form.get('tipo_sistema')
+    descripcion = request.form.get('descripcion')
+
+    # Crear sistema en la base de datos
+    from database import crear_sistema_caec
+    system_id = crear_sistema_caec(
+        session['user_id'], nombre, ubicacion,
+        tipo_sistema, descripcion
+    )
+
+    if system_id:
+        return redirect(url_for('systems'))
+    else:
+        from database import obtener_todos_sistemas_usuario, obtener_sistema_activo
+        active_system = obtener_sistema_activo(session['user_id'])
+        other_systems = obtener_todos_sistemas_usuario(session['user_id'], exclude_active=True)
+        return render_template('systems.html',
+                             active_system=active_system,
+                             other_systems=other_systems,
+                             error='Error al crear el sistema')
+
+# Ruta para activar sistema
+@app.route('/activate_system/<int:system_id>', methods=['POST'])
+def activate_system(system_id):
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    from database import activar_sistema
+    success = activar_sistema(session['user_id'], system_id)
+
+    if success:
+        # Actualizar sesión
+        session['sistema_id'] = system_id
+
+    return redirect(url_for('systems'))
+
+# Ruta para eliminar sistema
+@app.route('/delete_system/<int:system_id>', methods=['POST'])
+def delete_system(system_id):
+    # Verificar si el usuario está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    from database import eliminar_sistema
+    success = eliminar_sistema(session['user_id'], system_id)
+
+    return redirect(url_for('systems'))
 
 if __name__ == '__main__':
     app.run(debug=True)

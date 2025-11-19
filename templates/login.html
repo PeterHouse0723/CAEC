@@ -7,18 +7,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
-<body>
+<body class="login-page">
+    <!-- Logo CAEC en la parte superior -->
+    <div class="login-logo-top">
+        <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="CAEC">
+    </div>
+
     <div class="container">
         <div class="login-box">
-            <div class="logo">
-                <h1>CAEC</h1>
-                <p>Sistema Hidropónico Automatizado</p>
-            </div>
             <form id="loginForm" class="login-form" method="POST" action="{{ url_for('login') }}">
                 <h2>Iniciar Sesión</h2>
 
                 {% if error %}
-                <div class="error-message" style="background: #fff5f5; color: #c53030; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fc8181;">
+                <div class="error-message" style="background: rgba(255, 245, 245, 0.9); color: #c53030; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fc8181;">
                     {{ error }}
                 </div>
                 {% endif %}
@@ -43,9 +44,6 @@
                     <p>¿No tienes cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a></p>
                 </div>
             </form>
-            <div class="back-home">
-                <a href="{{ url_for('index') }}">← Volver al inicio</a>
-            </div>
         </div>
     </div>
 

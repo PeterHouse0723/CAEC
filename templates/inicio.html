@@ -9,30 +9,99 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Barra de Navegación Superior -->
-        <nav class="top-nav">
-            <div class="nav-left">
-                <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="Logo CAEC" class="logo">
-            </div>
-            <div class="nav-right">
-                <div class="profile-menu">
-                    <div class="profile-circle" onclick="toggleProfileMenu()">
-                        <span class="profile-initial">U</span>
+        <!-- Logo flotante (esquina superior izquierda) -->
+        <div class="floating-logo">
+            <img src="{{ url_for('static', filename='img/logocaec.png') }}" alt="Logo CAEC">
+        </div>
+
+        <!-- Área de usuario flotante (esquina superior derecha) -->
+        <div class="floating-user-area">
+            <!-- Campana de notificaciones -->
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge">3</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">Notificaciones</div>
+                    <div class="notification-item">
+                        <div class="notification-icon">💧</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Nivel de agua bajo</div>
+                            <div class="notification-time">Hace 5 minutos</div>
+                        </div>
                     </div>
-                    <div class="dropdown-menu" id="profileDropdown">
-                        <a href="#">Cuenta</a>
-                        <a href="#">Sistemas CAEC</a>
-                        <a href="#">Configuración</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ url_for('login') }}">Salir</a>
+                    <div class="notification-item">
+                        <div class="notification-icon">🌡️</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Temperatura óptima</div>
+                            <div class="notification-time">Hace 1 hora</div>
+                        </div>
                     </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">🌾</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Cosecha próxima en 5 días</div>
+                            <div class="notification-time">Hace 3 horas</div>
+                        </div>
+                    </div>
+                    <div class="notification-footer">Ver todas las notificaciones</div>
                 </div>
             </div>
-        </nav>
+
+            <!-- Menú de usuario -->
+            <div class="user-menu-container" onclick="toggleProfileMenu()">
+                <div class="user-circle">
+                    <span class="user-initial">{{ user_name[0] if user_name else 'U' }}</span>
+                </div>
+                <div class="user-dropdown" id="profileDropdown">
+                    <div class="user-dropdown-header">
+                        <div class="user-avatar-large">{{ user_name[0] if user_name else 'U' }}</div>
+                        <div class="user-info">
+                            <div class="user-name">{{ user_name if user_name else 'Usuario' }}</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('account') }}" class="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Mi Cuenta
+                    </a>
+                    <a href="{{ url_for('systems') }}" class="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Sistemas CAEC
+                    </a>
+                    <a href="{{ url_for('config') }}" class="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m9.66-9.66l-4.24 4.24m-6.84 0l-4.24-4.24M1 12h6m6 0h6"></path>
+                        </svg>
+                        Configuración
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('login') }}" class="dropdown-item logout">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="dashboard-main">
-            <h2>Panel de Monitoreo Hidropónico</h2>
+            <h2>Panel de Control Sistema CAEC</h2>
 
             <!-- Visualización Resumen del Sistema CAEC -->
             <div class="system-overview">
@@ -238,21 +307,21 @@
                     <g id="waterLevelIndicator">
                         <line x1="830" y1="950" x2="930" y2="950" stroke="#1976d2" stroke-width="3"/>
                         <circle cx="830" cy="950" r="7" fill="#1976d2"/>
-                        <text x="945" y="945" font-size="18" fill="#666" font-weight="500">Nivel de Agua</text>
+                        <text x="945" y="945" font-size="18" fill="#1a1a1a" font-weight="600">Nivel de Agua</text>
                         <text id="waterLevelText" x="945" y="975" font-size="34" fill="#1976d2" font-weight="bold">75%</text>
                     </g>
 
                     <g id="phIndicator">
                         <line x1="370" y1="950" x2="270" y2="950" stroke="#ec407a" stroke-width="3"/>
                         <circle cx="370" cy="950" r="7" fill="#ec407a"/>
-                        <text x="255" y="945" text-anchor="end" font-size="18" fill="#666" font-weight="500">Nivel pH</text>
+                        <text x="255" y="945" text-anchor="end" font-size="18" fill="#1a1a1a" font-weight="600">Nivel pH</text>
                         <text id="phValueText" x="255" y="975" text-anchor="end" font-size="34" fill="#ec407a" font-weight="bold">6.5</text>
                     </g>
 
                     <g id="nutrientIndicator">
                         <line x1="600" y1="1150" x2="600" y2="1220" stroke="#ab47bc" stroke-width="3"/>
                         <circle cx="600" cy="1150" r="7" fill="#ab47bc"/>
-                        <text x="600" y="1255" text-anchor="middle" font-size="18" fill="#666" font-weight="500">Nutrientes</text>
+                        <text x="600" y="1255" text-anchor="middle" font-size="18" fill="#1a1a1a" font-weight="600">Nutrientes</text>
                         <text id="nutrientValueText" x="600" y="1285" text-anchor="middle" font-size="34" fill="#ab47bc" font-weight="bold">85%</text>
                     </g>
                 </svg>
@@ -292,14 +361,55 @@
                 <!-- Contenedor Tarjeta Irrigación -->
                 <div class="card-wrapper">
                     <button class="sensor-card irrigation-card" data-sensor="irrigation" onclick="openSensorModal('irrigation')">
-                        <div class="card-icon">🚿</div>
+                        <!-- Animación SVG de irrigación -->
+                        <div class="card-icon" style="height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                            <svg viewBox="0 0 200 120" style="width: 130px; height: auto;">
+                                <!-- Tubo horizontal -->
+                                <rect x="20" y="15" width="160" height="12" fill="#546e7a" rx="6"/>
+
+                                <!-- Conexiones verticales -->
+                                <rect x="50" y="27" width="4" height="20" fill="#546e7a"/>
+                                <rect x="100" y="27" width="4" height="20" fill="#546e7a"/>
+                                <rect x="150" y="27" width="4" height="20" fill="#546e7a"/>
+
+                                <!-- Boquillas -->
+                                <circle cx="52" cy="50" r="5" fill="#37474f"/>
+                                <circle cx="102" cy="50" r="5" fill="#37474f"/>
+                                <circle cx="152" cy="50" r="5" fill="#37474f"/>
+
+                                <!-- Gotas de agua (animadas cuando activo) -->
+                                <g id="irrigationCardDrops" class="irrigation-card-drops">
+                                    <circle cx="52" cy="60" r="3" fill="#1976d2" opacity="0.8">
+                                        <animate attributeName="cy" from="60" to="100" dur="1.5s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.8" to="0" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="102" cy="65" r="3" fill="#1976d2" opacity="0.8">
+                                        <animate attributeName="cy" from="65" to="105" dur="1.3s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.8" to="0" dur="1.3s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="152" cy="62" r="3" fill="#1976d2" opacity="0.8">
+                                        <animate attributeName="cy" from="62" to="102" dur="1.4s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.8" to="0" dur="1.4s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="52" cy="70" r="2.5" fill="#42a5f5" opacity="0.6">
+                                        <animate attributeName="cy" from="70" to="105" dur="1.2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.6" to="0" dur="1.2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="102" cy="68" r="2.5" fill="#42a5f5" opacity="0.6">
+                                        <animate attributeName="cy" from="68" to="103" dur="1.6s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.6" to="0" dur="1.6s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="152" cy="72" r="2.5" fill="#42a5f5" opacity="0.6">
+                                        <animate attributeName="cy" from="72" to="107" dur="1.1s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" from="0.6" to="0" dur="1.1s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                            </svg>
+                        </div>
                         <h3 class="card-title">Irrigación</h3>
                         <div class="card-value" onclick="toggleIrrigationState(event)" style="cursor: pointer;">
                             <span class="value-text" id="irrigationValue">Activo</span>
                         </div>
-                        <div class="water-drop drop1"></div>
-                        <div class="water-drop drop2"></div>
-                        <div class="water-drop drop3"></div>
                     </button>
                 </div>
 
@@ -329,28 +439,13 @@
 
                 <!-- Contenedor Tarjeta Próxima Cosecha -->
                 <div class="card-wrapper">
-                    <button class="sensor-card harvest-card" data-sensor="harvest" onclick="openSensorModal('harvest')">
+                    <button class="sensor-card harvest-card" data-sensor="harvest" onclick="openHarvestModal('harvest')">
                         <div class="card-icon">🌾</div>
                         <h3 class="card-title">Próxima Cosecha</h3>
-                        <div id="harvestCountdown">
-                            <div class="countdown-item">
-                                <span id="days">00</span>
-                                <div class="countdown-label">Días</div>
-                            </div>
-                            <div class="countdown-item">
-                                <span id="hours">00</span>
-                                <div class="countdown-label">Horas</div>
-                            </div>
-                            <div class="countdown-item">
-                                <span id="minutes">00</span>
-                                <div class="countdown-label">Min</div>
-                            </div>
-                            <div class="countdown-item">
-                                <span id="seconds">00</span>
-                                <div class="countdown-label">Seg</div>
-                            </div>
+                        <div class="card-value harvest-value">
+                            <span class="value-number" id="days">00</span>
+                            <span class="value-unit">Días</span>
                         </div>
-                        <div class="harvest-date" id="harvestDate">Fecha: --/--/----</div>
                     </button>
                 </div>
             </div>
@@ -368,6 +463,39 @@
                     <!-- Detalles adicionales -->
                     <div class="modal-details" id="modalDetails">
                         <!-- Los detalles se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para la tarjeta de cosecha -->
+            <div id="harvestModal" class="modal" onclick="closeModalOnOutsideClick(event)">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <span class="close-btn" onclick="closeHarvestModal()">&times;</span>
+                    <h2 id="harvestModalTitle">Detalles de la Cosecha</h2>
+            
+                    <div class="harvest-progress-container">
+                        <svg class="harvest-progress-circle" viewBox="0 0 120 120">
+                            <circle class="progress-bg" cx="60" cy="60" r="54" />
+                            <circle class="progress-bar" id="harvestProgressBar" cx="60" cy="60" r="54" />
+                        </svg>
+                        <div class="progress-text">
+                            <span id="harvestProgressPercentage">0%</span>
+                        </div>
+                    </div>
+            
+                    <div class="harvest-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Tipo de Cultivo:</span>
+                            <span class="detail-value" id="harvestCropType">Lechuga</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Fecha de Plantación:</span>
+                            <span class="detail-value" id="harvestPlantDate">--/--/----</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Fecha Estimada de Cosecha:</span>
+                            <span class="detail-value" id="harvestEstimatedDate">--/--/----</span>
+                        </div>
                     </div>
                 </div>
             </div>

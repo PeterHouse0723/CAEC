@@ -211,6 +211,189 @@ def actualizar_ultimo_sync(sistema_id):
     conn.commit()
     conn.close()
 
+def obtener_usuario_por_id(usuario_id):
+    """Obtener datos completos del usuario incluyendo información de contacto"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        SELECT u.*, c.telefono, c.celular, c.direccion, c.ciudad, c.pais, c.codigo_postal
+        FROM usuario u
+        LEFT JOIN contacto c ON u.id = c.usuario_id
+        WHERE u.id = ?
+    ''', (usuario_id,))
+
+    usuario = cursor.fetchone()
+    conn.close()
+
+    return dict(usuario) if usuario else None
+
+def actualizar_usuario(usuario_id, nombre, apellido, telefono, celular, direccion, ciudad, codigo_postal, pais):
+    """Actualizar información del usuario y contacto"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Actualizar datos del usuario
+        cursor.execute('''
+            UPDATE usuario
+            SET nombre = ?, apellido = ?
+            WHERE id = ?
+        ''', (nombre, apellido, usuario_id))
+
+        # Actualizar datos de contacto
+        cursor.execute('''
+            UPDATE contacto
+            SET telefono = ?, celular = ?, direccion = ?, ciudad = ?, codigo_postal = ?, pais = ?
+            WHERE usuario_id = ?
+        ''', (telefono, celular, direccion, ciudad, codigo_postal, pais, usuario_id))
+
+        conn.commit()
+        success = True
+    except Exception as e:
+        print(f"Error al actualizar usuario: {e}")
+        success = False
+    finally:
+        conn.close()
+
+    return success
+
+def cambiar_password(usuario_id, nueva_password):
+    """Cambiar la contraseña del usuario"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+            UPDATE usuario
+            SET password = ?
+            WHERE id = ?
+        ''', (nueva_password, usuario_id))
+
+        conn.commit()
+        success = cursor.rowcount > 0
+    except Exception as e:
+        print(f"Error al cambiar contraseña: {e}")
+        success = False
+    finally:
+        conn.close()
+
+    return success
+
+def obtener_sistema_activo(usuario_id):
+    """Obtener el sistema activo del usuario"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        SELECT * FROM sistema_caec
+        WHERE usuario_id = ? AND estado = 'activo'
+        LIMIT 1
+    ''', (usuario_id,))
+
+    sistema = cursor.fetchone()
+    conn.close()
+
+    return dict(sistema) if sistema else None
+
+def obtener_todos_sistemas_usuario(usuario_id, exclude_active=False):
+    """Obtener todos los sistemas del usuario"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if exclude_active:
+        cursor.execute('''
+            SELECT * FROM sistema_caec
+            WHERE usuario_id = ? AND estado != 'activo'
+            ORDER BY fecha_vinculacion DESC
+        ''', (usuario_id,))
+    else:
+        cursor.execute('''
+            SELECT * FROM sistema_caec
+            WHERE usuario_id = ?
+            ORDER BY fecha_vinculacion DESC
+        ''', (usuario_id,))
+
+    sistemas = cursor.fetchall()
+    conn.close()
+
+    return [dict(sistema) for sistema in sistemas]
+
+def crear_sistema_caec(usuario_id, nombre, ubicacion, tipo_sistema, descripcion=None):
+    """Crear un nuevo sistema CAEC para el usuario"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Generar código único para el sistema
+        codigo_sistema = f"CAEC-{secrets.token_hex(4).upper()}"
+
+        cursor.execute('''
+            INSERT INTO sistema_caec
+            (codigo_sistema, usuario_id, nombre_sistema, fecha_vinculacion, ultimo_sync, estado, modelo, version_firmware)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'activo', ?, '1.0.0')
+        ''', (codigo_sistema, usuario_id, f"{nombre} ({ubicacion})", tipo_sistema))
+
+        system_id = cursor.lastrowid
+        conn.commit()
+        return system_id
+    except Exception as e:
+        print(f"Error al crear sistema: {e}")
+        return None
+    finally:
+        conn.close()
+
+def activar_sistema(usuario_id, system_id):
+    """Activar un sistema específico y desactivar los demás"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Desactivar todos los sistemas del usuario
+        cursor.execute('''
+            UPDATE sistema_caec
+            SET estado = 'inactivo'
+            WHERE usuario_id = ?
+        ''', (usuario_id,))
+
+        # Activar el sistema seleccionado
+        cursor.execute('''
+            UPDATE sistema_caec
+            SET estado = 'activo'
+            WHERE id = ? AND usuario_id = ?
+        ''', (system_id, usuario_id))
+
+        conn.commit()
+        success = cursor.rowcount > 0
+    except Exception as e:
+        print(f"Error al activar sistema: {e}")
+        success = False
+    finally:
+        conn.close()
+
+    return success
+
+def eliminar_sistema(usuario_id, system_id):
+    """Eliminar un sistema del usuario"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+            DELETE FROM sistema_caec
+            WHERE id = ? AND usuario_id = ?
+        ''', (system_id, usuario_id))
+
+        conn.commit()
+        success = cursor.rowcount > 0
+    except Exception as e:
+        print(f"Error al eliminar sistema: {e}")
+        success = False
+    finally:
+        conn.close()
+
+    return success
+
 # Inicializar la base de datos al importar el módulo
 if __name__ == "__main__":
     init_db()

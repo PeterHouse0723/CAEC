@@ -290,87 +290,157 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
         const savingDuration = systemData.irrigation.savingDuration || 15;
 
         return `
-            <div class="circle-progress-container">
-                <div class="circle-icon-large">${icon}</div>
-                <div class="circle-value-large">
-                    <span class="value-main">${displayValue}</span>
-                </div>
-            </div>
-            <div class="irrigation-controls">
-                <h3 style="margin: 20px 0 15px 0; color: #333; font-size: 1.2rem;">Control de Irrigación</h3>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
-                    <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
-                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #424242;
-                                   background: ${isActive ? '#424242' : 'white'};
-                                   color: ${isActive ? 'white' : '#424242'};
-                                   font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                        Activar
-                    </button>
-                    <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
-                            style="padding: 12px 24px; border-radius: 8px; border: 2px solid #757575;
-                                   background: ${!isActive ? '#757575' : 'white'};
-                                   color: ${!isActive ? 'white' : '#757575'};
-                                   font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                        Desactivar
-                    </button>
-                </div>
+            <!-- Animación de sistema de irrigación -->
+            <div class="irrigation-animation-container" style="margin-bottom: 30px;">
+                <svg viewBox="0 0 200 120" style="width: 100%; max-width: 350px; margin: 0 auto; display: block;">
+                    <!-- Tubo horizontal -->
+                    <rect x="20" y="15" width="160" height="12" fill="#546e7a" rx="6"/>
 
+                    <!-- Conexiones verticales -->
+                    <rect x="50" y="27" width="4" height="20" fill="#546e7a"/>
+                    <rect x="100" y="27" width="4" height="20" fill="#546e7a"/>
+                    <rect x="150" y="27" width="4" height="20" fill="#546e7a"/>
+
+                    <!-- Boquillas -->
+                    <circle cx="52" cy="50" r="5" fill="#37474f"/>
+                    <circle cx="102" cy="50" r="5" fill="#37474f"/>
+                    <circle cx="152" cy="50" r="5" fill="#37474f"/>
+
+                    <!-- Gotas de agua (solo visibles cuando está activo) -->
+                    ${isActive ? `
+                    <g class="water-drops-irrigation">
+                        <circle cx="52" cy="60" r="3" fill="#1976d2" opacity="0.8">
+                            <animate attributeName="cy" from="60" to="100" dur="1.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.8" to="0" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="102" cy="65" r="3" fill="#1976d2" opacity="0.8">
+                            <animate attributeName="cy" from="65" to="105" dur="1.3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.8" to="0" dur="1.3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="152" cy="62" r="3" fill="#1976d2" opacity="0.8">
+                            <animate attributeName="cy" from="62" to="102" dur="1.4s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.8" to="0" dur="1.4s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="52" cy="70" r="2.5" fill="#42a5f5" opacity="0.6">
+                            <animate attributeName="cy" from="70" to="105" dur="1.2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.6" to="0" dur="1.2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="102" cy="68" r="2.5" fill="#42a5f5" opacity="0.6">
+                            <animate attributeName="cy" from="68" to="103" dur="1.6s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.6" to="0" dur="1.6s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="152" cy="72" r="2.5" fill="#42a5f5" opacity="0.6">
+                            <animate attributeName="cy" from="72" to="107" dur="1.1s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.6" to="0" dur="1.1s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                    ` : ''}
+
+                    <!-- Estado del sistema -->
+                    <text x="100" y="115" text-anchor="middle" font-size="14" font-weight="600" fill="${isActive ? '#1976d2' : '#757575'}">
+                        ${displayValue}
+                    </text>
+                </svg>
+            </div>
+
+            <!-- Dos modos de irrigación lado a lado -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                 <!-- Modo de Ahorro de Energía -->
-                <div style="margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600;">⚡ Modo de Ahorro de Energía</h4>
+                <div style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600; text-align: center;">⚡ Modo Ahorro</h4>
 
                     <!-- Barra deslizante de potencia -->
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <label style="font-size: 0.9rem; color: #666; font-weight: 500;">Potencia de la bomba:</label>
-                            <span id="powerValue" style="font-size: 1.2rem; font-weight: 700; color: #424242;">${savingPower}%</span>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="font-size: 0.85rem; color: #666; font-weight: 500;">Potencia:</label>
+                            <span id="powerValue" style="font-size: 1.1rem; font-weight: 700; color: #424242;">${savingPower}%</span>
                         </div>
-                        <div style="position: relative; height: 40px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 20px; overflow: hidden; border: 2px solid #bdbdbd;">
+                        <div style="position: relative; height: 35px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 20px; overflow: hidden; border: 2px solid #bdbdbd;">
                             <div id="powerFill" style="position: absolute; left: 0; top: 0; height: 100%; width: ${savingPower}%; background: linear-gradient(90deg, #616161 0%, #424242 100%); transition: width 0.3s ease; border-radius: 18px;"></div>
                             <input type="range" id="powerSlider" min="0" max="100" value="${savingPower}"
                                    oninput="updatePowerSlider(this.value)"
                                    style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.75rem; color: #999;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 0.7rem; color: #999;">
                             <span>0%</span>
-                            <span>50%</span>
                             <span>100%</span>
                         </div>
                     </div>
 
                     <!-- Duración del modo ahorro -->
-                    <div style="margin-top: 15px;">
-                        <label style="font-size: 0.9rem; color: #666; font-weight: 500; display: block; margin-bottom: 8px;">Duración del modo ahorro:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
+                    <div>
+                        <label style="font-size: 0.85rem; color: #666; font-weight: 500; display: block; margin-bottom: 6px;">Duración:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
                             <input type="number" id="savingDuration" value="${savingDuration}" min="1" max="120"
-                                   style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem;">
-                            <span style="color: #666; font-size: 0.9rem; white-space: nowrap;">minutos</span>
+                                   style="flex: 1; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem;">
+                            <span style="color: #666; font-size: 0.85rem; white-space: nowrap;">min</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Periodo de Irrigación Abundante -->
-                <div style="margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600;">💧 Irrigación Abundante (100%)</h4>
+                <div style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600; text-align: center;">💧 Modo Abundante</h4>
                     <div>
-                        <label style="font-size: 0.9rem; color: #666; font-weight: 500; display: block; margin-bottom: 8px;">Duración del periodo abundante:</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
+                        <label style="font-size: 0.85rem; color: #666; font-weight: 500; display: block; margin-bottom: 6px;">Duración:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
                             <input type="number" id="abundantDuration" value="${abundantDuration}" min="1" max="60"
-                                   style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem;">
-                            <span style="color: #666; font-size: 0.9rem; white-space: nowrap;">minutos</span>
+                                   style="flex: 1; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem;">
+                            <span style="color: #666; font-size: 0.85rem; white-space: nowrap;">min</span>
                         </div>
                     </div>
-                    <p style="margin: 12px 0 0 0; font-size: 0.8rem; color: #999; line-height: 1.4;">
-                        La bomba funcionará al 100% durante este tiempo, luego cambiará automáticamente al modo de ahorro.
+                    <p style="margin: 12px 0 0 0; font-size: 0.75rem; color: #999; line-height: 1.3;">
+                        La bomba funcionará al 100% durante este tiempo, luego cambiará al modo ahorro.
                     </p>
                 </div>
+            </div>
 
-                <!-- Botón de guardar configuración -->
-                <button onclick="saveIrrigationConfig()"
-                        style="width: 100%; margin-top: 20px; padding: 14px; background: #424242; color: white; border: none;
-                               border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
-                    Guardar Configuración
+            <!-- Botones de activar/desactivar -->
+            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+                <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
+                        style="flex: 1; padding: 14px 24px; border-radius: 8px; border: 2px solid #424242;
+                               background: ${isActive ? '#424242' : 'white'};
+                               color: ${isActive ? 'white' : '#424242'};
+                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    Activar Sistema
                 </button>
+                <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
+                        style="flex: 1; padding: 14px 24px; border-radius: 8px; border: 2px solid #757575;
+                               background: ${!isActive ? '#757575' : 'white'};
+                               color: ${!isActive ? 'white' : '#757575'};
+                               font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    Desactivar Sistema
+                </button>
+            </div>
+
+            <!-- Botón de guardar configuración -->
+            <button onclick="saveIrrigationConfig()"
+                    style="width: 100%; margin-bottom: 20px; padding: 14px; background: #424242; color: white; border: none;
+                           border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                Guardar Configuración
+            </button>
+
+            <!-- Resumen del estado del sistema -->
+            <div style="padding: 18px; background: rgba(102, 126, 234, 0.08); border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                <h4 style="margin: 0 0 12px 0; color: #424242; font-size: 0.95rem; font-weight: 600; text-align: center;">📊 Resumen del Sistema</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #666;">Estado:</span>
+                        <span style="font-weight: 600; color: ${isActive ? '#1976d2' : '#757575'};">${isActive ? 'Activo' : 'Inactivo'}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #666;">Potencia:</span>
+                        <span style="font-weight: 600; color: #424242;">${savingPower}%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #666;">Modo Ahorro:</span>
+                        <span style="font-weight: 600; color: #424242;">${savingDuration} min</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #666;">Modo Abundante:</span>
+                        <span style="font-weight: 600; color: #424242;">${abundantDuration} min</span>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -438,8 +508,17 @@ function animateBeaker(nutrientLevel) {
     const nutrientFill = document.getElementById('nutrientFillLevel');
     if (!nutrientFill) return;
 
-    // Aquí puedes agregar lógica para animar el nivel de nutrientes
-    // Similar al tanque de agua
+    // Calcular la altura del líquido basado en el porcentaje
+    // El vaso va de y=100 (100%) a y=200 (0%)
+    const minY = 100; // 100%
+    const maxY = 200; // 0%
+    const fillHeight = maxY - ((nutrientLevel / 100) * (maxY - minY));
+
+    // Crear el path del líquido basado en el nivel
+    const newPath = `M 72 ${fillHeight} Q 72 248 100 248 Q 128 248 128 ${fillHeight} L 128 248 L 72 248 Z`;
+
+    // Animar el cambio
+    nutrientFill.setAttribute('d', newPath);
 }
 
 // Función para actualizar el círculo de progreso
@@ -621,7 +700,64 @@ function closeModalOnOutsideClick(event) {
     if (event.target.id === 'sensorModal') {
         closeSensorModal();
     }
+    if (event.target.id === 'harvestModal') {
+        closeHarvestModal();
+    }
 }
+
+// Datos de la cosecha
+const harvestData = {
+    cropType: 'Lechuga',
+    plantDate: new Date('2025-11-01'),
+    estimatedHarvestDate: new Date('2025-12-20T18:00:00'),
+    get progress() {
+        const now = new Date();
+        const totalTime = this.estimatedHarvestDate.getTime() - this.plantDate.getTime();
+        const elapsedTime = now.getTime() - this.plantDate.getTime();
+        return Math.min(100, Math.max(0, (elapsedTime / totalTime) * 100));
+    }
+};
+
+// Función para abrir el modal de cosecha
+function openHarvestModal() {
+    const modal = document.getElementById('harvestModal');
+    if (!modal) return;
+
+    // Llenar datos del modal
+    document.getElementById('harvestCropType').textContent = harvestData.cropType;
+    document.getElementById('harvestPlantDate').textContent = harvestData.plantDate.toLocaleDateString('es-ES');
+    document.getElementById('harvestEstimatedDate').textContent = harvestData.estimatedHarvestDate.toLocaleDateString('es-ES');
+    
+    updateHarvestProgress();
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para cerrar el modal de cosecha
+function closeHarvestModal() {
+    const modal = document.getElementById('harvestModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    document.body.style.overflow = 'auto';
+}
+
+// Función para actualizar el progreso de la cosecha
+function updateHarvestProgress() {
+    const progress = harvestData.progress;
+    const progressBar = document.getElementById('harvestProgressBar');
+    const progressPercentage = document.getElementById('harvestProgressPercentage');
+    
+    if (progressBar && progressPercentage) {
+        const circumference = 2 * Math.PI * 54; // Radio is 54
+        const offset = circumference - (progress / 100) * circumference;
+        
+        progressBar.style.strokeDashoffset = offset;
+        progressPercentage.textContent = `${Math.round(progress)}%`;
+    }
+}
+
 
 // Inicialización cuando se carga la página
 document.addEventListener('DOMContentLoaded', function() {
@@ -635,6 +771,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeSensorModal();
+            closeHarvestModal();
         }
     });
 });
@@ -682,6 +819,16 @@ function toggleIrrigation(activate) {
 
     // Actualizar tarjeta de irrigación
     document.getElementById('irrigationValue').textContent = systemData.irrigation.value;
+
+    // Actualizar animación de la tarjeta (mostrar/ocultar gotas)
+    const irrigationCard = document.querySelector('.irrigation-card');
+    if (irrigationCard) {
+        if (activate) {
+            irrigationCard.classList.remove('inactive');
+        } else {
+            irrigationCard.classList.add('inactive');
+        }
+    }
 
     // Actualizar visualización en el resumen
     updateIrrigationVisualization(activate);
@@ -824,10 +971,48 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function toggleProfileMenu() {
     const dropdown = document.getElementById('profileDropdown');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
     if (dropdown) {
         dropdown.classList.toggle('show');
+        // Cerrar notificaciones si están abiertas
+        if (notificationDropdown) {
+            notificationDropdown.classList.remove('show');
+        }
     }
 }
+
+/**
+ * Muestra u oculta el menú desplegable de notificaciones.
+ */
+function toggleNotifications() {
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const profileDropdown = document.getElementById('profileDropdown');
+
+    if (notificationDropdown) {
+        notificationDropdown.classList.toggle('show');
+        // Cerrar perfil si está abierto
+        if (profileDropdown) {
+            profileDropdown.classList.remove('show');
+        }
+    }
+}
+
+// Cerrar dropdowns al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const userMenu = document.querySelector('.user-menu-container');
+    const notificationBell = document.querySelector('.notification-bell');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    if (userMenu && !userMenu.contains(event.target) && profileDropdown) {
+        profileDropdown.classList.remove('show');
+    }
+
+    if (notificationBell && !notificationBell.contains(event.target) && notificationDropdown) {
+        notificationDropdown.classList.remove('show');
+    }
+});
 
 /**
  * Inicia el contador regresivo para la cosecha.
@@ -843,11 +1028,8 @@ function startHarvestCountdown() {
     }
 
     const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
 
-    if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+    if (!daysEl) return;
 
     const interval = setInterval(() => {
         const now = new Date();
@@ -860,14 +1042,7 @@ function startHarvestCountdown() {
         }
 
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
         daysEl.textContent = String(days).padStart(2, '0');
-        hoursEl.textContent = String(hours).padStart(2, '0');
-        minutesEl.textContent = String(minutes).padStart(2, '0');
-        secondsEl.textContent = String(seconds).padStart(2, '0');
     }, 1000);
 }
 
