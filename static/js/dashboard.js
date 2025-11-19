@@ -688,30 +688,49 @@ function toggleIrrigation(activate) {
 // Función para actualizar la visualización de irrigación en el resumen
 function updateIrrigationVisualization(isActive) {
     const irrigationColumn = document.getElementById('irrigationColumn');
-    const splashEffect = document.getElementById('splashEffect');
+    const centralPipe = document.getElementById('centralPipe');
+    const pump = document.getElementById('pump');
     const waterRise = document.getElementById('waterRise');
     const waterRiseY = document.getElementById('waterRiseY');
 
+    // Obtener todas las gotas de agua de todos los niveles
+    const allDrops = [
+        document.querySelector('.level1-drops'),
+        document.querySelector('.level2-drops'),
+        document.querySelector('.level3-drops'),
+        document.querySelector('.level4-drops'),
+        document.querySelector('.level5-drops')
+    ];
+
     if (isActive) {
-        // Mostrar la columna de agua
+        // Mostrar tubería central, bomba y columna de agua
+        centralPipe.style.display = 'block';
+        pump.style.display = 'block';
         irrigationColumn.style.display = 'block';
+
+        // Mostrar gotas cayendo en todos los niveles
+        allDrops.forEach(drops => {
+            if (drops) drops.style.display = 'block';
+        });
 
         // Iniciar animación de subida de agua
         waterRise.beginElement();
         waterRiseY.beginElement();
 
-        // Mostrar efecto de salpicado después de 2 segundos
+        // Sin efecto de salpicado
         setTimeout(() => {
             splashEffect.style.opacity = '1';
         }, 2000);
     } else {
-        // Ocultar la columna de agua y el salpicado
-        splashEffect.style.opacity = '0';
+        // Ocultar tubería central, bomba, columna de agua y gotas
+        centralPipe.style.display = 'none';
+        pump.style.display = 'none';
+        irrigationColumn.style.display = 'none';
 
-        // Esperar a que termine el efecto de salpicado antes de ocultar todo
-        setTimeout(() => {
-            irrigationColumn.style.display = 'none';
-        }, 500);
+        // Ocultar gotas cayendo en todos los niveles
+        allDrops.forEach(drops => {
+            if (drops) drops.style.display = 'none';
+        });
     }
 }
 
