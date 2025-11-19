@@ -292,7 +292,7 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
         return `
             <!-- Animación de sistema de irrigación -->
             <div class="irrigation-animation-container" style="margin-bottom: 30px;">
-                <svg viewBox="0 0 200 120" style="width: 100%; max-width: 350px; margin: 0 auto; display: block;">
+                <svg viewBox="0 0 200 120" style="width: 100%; max-width: 400px; margin: 0 auto; display: block;">
                     <!-- Tubo horizontal -->
                     <rect x="20" y="15" width="160" height="12" fill="#546e7a" rx="6"/>
 
@@ -343,69 +343,17 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
                 </svg>
             </div>
 
-            <!-- Dos modos de irrigación lado a lado -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
-                <!-- Modo de Ahorro de Energía -->
-                <div style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600; text-align: center;">⚡ Modo Ahorro</h4>
-
-                    <!-- Barra deslizante de potencia -->
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <label style="font-size: 0.85rem; color: #666; font-weight: 500;">Potencia:</label>
-                            <span id="powerValue" style="font-size: 1.1rem; font-weight: 700; color: #424242;">${savingPower}%</span>
-                        </div>
-                        <div style="position: relative; height: 35px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 20px; overflow: hidden; border: 2px solid #bdbdbd;">
-                            <div id="powerFill" style="position: absolute; left: 0; top: 0; height: 100%; width: ${savingPower}%; background: linear-gradient(90deg, #616161 0%, #424242 100%); transition: width 0.3s ease; border-radius: 18px;"></div>
-                            <input type="range" id="powerSlider" min="0" max="100" value="${savingPower}"
-                                   oninput="updatePowerSlider(this.value)"
-                                   style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 0.7rem; color: #999;">
-                            <span>0%</span>
-                            <span>100%</span>
-                        </div>
-                    </div>
-
-                    <!-- Duración del modo ahorro -->
-                    <div>
-                        <label style="font-size: 0.85rem; color: #666; font-weight: 500; display: block; margin-bottom: 6px;">Duración:</label>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="number" id="savingDuration" value="${savingDuration}" min="1" max="120"
-                                   style="flex: 1; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem;">
-                            <span style="color: #666; font-size: 0.85rem; white-space: nowrap;">min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Periodo de Irrigación Abundante -->
-                <div style="padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                    <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600; text-align: center;">💧 Modo Abundante</h4>
-                    <div>
-                        <label style="font-size: 0.85rem; color: #666; font-weight: 500; display: block; margin-bottom: 6px;">Duración:</label>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="number" id="abundantDuration" value="${abundantDuration}" min="1" max="60"
-                                   style="flex: 1; padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem;">
-                            <span style="color: #666; font-size: 0.85rem; white-space: nowrap;">min</span>
-                        </div>
-                    </div>
-                    <p style="margin: 12px 0 0 0; font-size: 0.75rem; color: #999; line-height: 1.3;">
-                        La bomba funcionará al 100% durante este tiempo, luego cambiará al modo ahorro.
-                    </p>
-                </div>
-            </div>
-
             <!-- Botones de activar/desactivar -->
-            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 25px;">
                 <button onclick="toggleIrrigation(true)" class="btn ${isActive ? 'btn-active' : ''}"
-                        style="flex: 1; padding: 14px 24px; border-radius: 8px; border: 2px solid #424242;
+                        style="flex: 1; padding: 14px 24px; border-radius: 10px; border: 2px solid #424242;
                                background: ${isActive ? '#424242' : 'white'};
                                color: ${isActive ? 'white' : '#424242'};
                                font-weight: 600; cursor: pointer; transition: all 0.3s;">
                     Activar Sistema
                 </button>
                 <button onclick="toggleIrrigation(false)" class="btn ${!isActive ? 'btn-active' : ''}"
-                        style="flex: 1; padding: 14px 24px; border-radius: 8px; border: 2px solid #757575;
+                        style="flex: 1; padding: 14px 24px; border-radius: 10px; border: 2px solid #757575;
                                background: ${!isActive ? '#757575' : 'white'};
                                color: ${!isActive ? 'white' : '#757575'};
                                font-weight: 600; cursor: pointer; transition: all 0.3s;">
@@ -413,32 +361,84 @@ function createCircleVisualization(value, unit, icon, color, sensorType) {
                 </button>
             </div>
 
+            <!-- Modo de Ahorro de Energía -->
+            <div style="padding: 20px; background: rgba(255, 193, 7, 0.08); border-radius: 12px; border: 1px solid rgba(255, 193, 7, 0.3); margin-bottom: 20px;">
+                <h4 style="margin: 0 0 18px 0; color: #424242; font-size: 1.1rem; font-weight: 600; text-align: center;">⚡ Modo de Ahorro de Energía</h4>
+
+                <!-- Barra deslizante de potencia -->
+                <div style="margin-bottom: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label style="font-size: 0.95rem; color: #424242; font-weight: 600;">Potencia de la bomba:</label>
+                        <span id="powerValue" style="font-size: 1.3rem; font-weight: 700; color: #424242;">${savingPower}%</span>
+                    </div>
+                    <div style="position: relative; height: 40px; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); border-radius: 20px; overflow: hidden; border: 2px solid #bdbdbd;">
+                        <div id="powerFill" style="position: absolute; left: 0; top: 0; height: 100%; width: ${savingPower}%; background: linear-gradient(90deg, #616161 0%, #424242 100%); transition: width 0.3s ease; border-radius: 18px;"></div>
+                        <input type="range" id="powerSlider" min="0" max="100" value="${savingPower}"
+                               oninput="updatePowerSlider(this.value)"
+                               style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.8rem; color: #999;">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Duración del modo ahorro -->
+                <div>
+                    <label style="font-size: 0.95rem; color: #424242; font-weight: 600; display: block; margin-bottom: 10px;">Duración del modo ahorro:</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" id="savingDuration" value="${savingDuration}" min="1" max="120"
+                               style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem;">
+                        <span style="color: #424242; font-size: 1rem; font-weight: 500; white-space: nowrap;">minutos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modo de Irrigación Abundante -->
+            <div style="padding: 20px; background: rgba(33, 150, 243, 0.08); border-radius: 12px; border: 1px solid rgba(33, 150, 243, 0.3); margin-bottom: 25px;">
+                <h4 style="margin: 0 0 18px 0; color: #424242; font-size: 1.1rem; font-weight: 600; text-align: center;">💧 Irrigación Abundante (100%)</h4>
+
+                <div>
+                    <label style="font-size: 0.95rem; color: #424242; font-weight: 600; display: block; margin-bottom: 10px;">Duración del periodo abundante:</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" id="abundantDuration" value="${abundantDuration}" min="1" max="60"
+                               style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem;">
+                        <span style="color: #424242; font-size: 1rem; font-weight: 500; white-space: nowrap;">minutos</span>
+                    </div>
+                </div>
+
+                <p style="margin: 15px 0 0 0; font-size: 0.85rem; color: #666; line-height: 1.5; padding: 12px; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
+                    💡 <strong>Nota:</strong> La bomba funcionará al 100% de potencia durante este tiempo, luego cambiará automáticamente al modo de ahorro.
+                </p>
+            </div>
+
             <!-- Botón de guardar configuración -->
             <button onclick="saveIrrigationConfig()"
-                    style="width: 100%; margin-bottom: 20px; padding: 14px; background: #424242; color: white; border: none;
-                           border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
-                Guardar Configuración
+                    style="width: 100%; margin-bottom: 20px; padding: 16px; background: linear-gradient(135deg, #424242 0%, #616161 100%); color: white; border: none;
+                           border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1.05rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                💾 Guardar Configuración
             </button>
 
             <!-- Resumen del estado del sistema -->
-            <div style="padding: 18px; background: rgba(102, 126, 234, 0.08); border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.2);">
-                <h4 style="margin: 0 0 12px 0; color: #424242; font-size: 0.95rem; font-weight: 600; text-align: center;">📊 Resumen del Sistema</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #666;">Estado:</span>
-                        <span style="font-weight: 600; color: ${isActive ? '#1976d2' : '#757575'};">${isActive ? 'Activo' : 'Inactivo'}</span>
+            <div style="padding: 20px; background: rgba(76, 175, 80, 0.08); border-radius: 12px; border: 1px solid rgba(76, 175, 80, 0.3);">
+                <h4 style="margin: 0 0 15px 0; color: #424242; font-size: 1rem; font-weight: 600; text-align: center;">📊 Resumen del Estado del Sistema</h4>
+                <div style="display: grid; gap: 12px; font-size: 0.9rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
+                        <span style="color: #666; font-weight: 500;">Estado del Sistema:</span>
+                        <span style="font-weight: 700; color: ${isActive ? '#1976d2' : '#757575'};">${isActive ? '✓ Activo' : '✗ Inactivo'}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #666;">Potencia:</span>
-                        <span style="font-weight: 600; color: #424242;">${savingPower}%</span>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
+                        <span style="color: #666; font-weight: 500;">Potencia de Bomba:</span>
+                        <span style="font-weight: 700; color: #424242;">${savingPower}%</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #666;">Modo Ahorro:</span>
-                        <span style="font-weight: 600; color: #424242;">${savingDuration} min</span>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
+                        <span style="color: #666; font-weight: 500;">Duración Modo Ahorro:</span>
+                        <span style="font-weight: 700; color: #424242;">${savingDuration} minutos</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #666;">Modo Abundante:</span>
-                        <span style="font-weight: 600; color: #424242;">${abundantDuration} min</span>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
+                        <span style="color: #666; font-weight: 500;">Duración Modo Abundante:</span>
+                        <span style="font-weight: 700; color: #424242;">${abundantDuration} minutos</span>
                     </div>
                 </div>
             </div>

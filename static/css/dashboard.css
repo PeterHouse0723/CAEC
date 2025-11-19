@@ -710,9 +710,9 @@ body {
     scrollbar-color: #888 transparent;
 }
 
-/* Modal más ancho para irrigación */
+/* Modal para irrigación - ancho estándar ya que todo está vertical */
 #irrigationModal .modal-content {
-    max-width: 700px;
+    max-width: 550px;
 }
 
 /* Estilos para el modal de cosecha */
