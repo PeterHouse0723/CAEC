@@ -554,41 +554,34 @@ function updateSystemOverview() {
     }
 
     // Actualizar posición de las olas en el tanque del sistema
-    updateSystemWaves(waterValue);
+    updateTankVisuals(waterValue);
 }
 
-// Función para actualizar las olas del sistema según el nivel de agua
-function updateSystemWaves(percentage) {
-    // El tanque ahora va de Y=800 a Y=1160 (360px de altura)
-    const tankBottom = 1160;
-    const tankTop = 800;
-    const tankHeight = tankBottom - tankTop;
+// Función para actualizar la visualización del tanque (nivel de agua y olas)
+function updateTankVisuals(percentage) {
+    // --- 1. Actualizar el nivel del rectángulo de agua ---
+    const waterRect = document.getElementById('tankWaterLevel');
+    if (waterRect) {
+        const tankTopY = 795;    // y inicial del contenedor del tanque + stroke
+        const tankBottomY = 1125; // y + altura - stroke
+        const tankHeight = tankBottomY - tankTopY; // Altura total disponible para el agua
 
-    // Calcular la posición Y del agua basado en el porcentaje
-    const waterY = tankBottom - (tankHeight * percentage / 100);
+        const waterHeight = tankHeight * (percentage / 100);
+        const waterY = tankBottomY - waterHeight;
 
-    // Actualizar las olas (elipses)
+        waterRect.setAttribute('y', waterY);
+        waterRect.setAttribute('height', waterHeight);
+    }
+
+    // --- 2. Actualizar la posición de las olas ---
+    const waterSurfaceY = 1125 - (330 * percentage / 100);
     const wave1 = document.querySelector('.system-wave1');
     const wave2 = document.querySelector('.system-wave2');
     const wave3 = document.querySelector('.system-wave3');
-    const waterFill = document.getElementById('waterFill');
 
-    if (wave1) {
-        wave1.setAttribute('cy', waterY);
-    }
-    if (wave2) {
-        wave2.setAttribute('cy', waterY + 10);
-    }
-    if (wave3) {
-        wave3.setAttribute('cy', waterY + 20);
-    }
-
-    // Actualizar el relleno de agua
-    if (waterFill) {
-        waterFill.setAttribute('y', waterY);
-        const fillHeight = tankBottom - waterY;
-        waterFill.setAttribute('height', fillHeight);
-    }
+    if (wave1) wave1.setAttribute('cy', waterSurfaceY - 5);
+    if (wave2) wave2.setAttribute('cy', waterSurfaceY);
+    if (wave3) wave3.setAttribute('cy', waterSurfaceY + 5);
 }
 
 // Función para actualizar la posición de las olas según el nivel de agua
@@ -702,42 +695,26 @@ function updateIrrigationVisualization(isActive) {
     const irrigationColumn = document.getElementById('irrigationColumn');
     const centralPipe = document.getElementById('centralPipe');
     const pump = document.getElementById('pump');
-    const waterRise = document.getElementById('waterRise');
-    const waterRiseY = document.getElementById('waterRiseY');
 
     // Obtener todas las gotas de agua de todos los niveles
-    const allDrops = [
-        document.querySelector('.level1-drops'),
-        document.querySelector('.level2-drops'),
-        document.querySelector('.level3-drops'),
-        document.querySelector('.level4-drops'),
-        document.querySelector('.level5-drops')
-    ];
+    const allDrops = document.querySelectorAll('.water-drops');
 
     if (isActive) {
-        // Mostrar tubería central, bomba y columna de agua
-        centralPipe.style.display = 'block';
-        pump.style.display = 'block';
-        irrigationColumn.style.display = 'block';
+        // Mostrar tubería de fondo, bomba y columna de agua animada
+        if(centralPipe) centralPipe.style.display = 'block';
+        if(pump) pump.style.display = 'block';
+        if(irrigationColumn) irrigationColumn.style.display = 'block';
 
         // Mostrar gotas cayendo en todos los niveles
         allDrops.forEach(drops => {
             if (drops) drops.style.display = 'block';
         });
 
-        // Iniciar animación de subida de agua
-        waterRise.beginElement();
-        waterRiseY.beginElement();
-
-        // Sin efecto de salpicado
-        setTimeout(() => {
-            splashEffect.style.opacity = '1';
-        }, 2000);
     } else {
-        // Ocultar tubería central, bomba, columna de agua y gotas
-        centralPipe.style.display = 'none';
-        pump.style.display = 'none';
-        irrigationColumn.style.display = 'none';
+        // Ocultar todo lo relacionado con la irrigación
+        if(centralPipe) centralPipe.style.display = 'none';
+        if(pump) pump.style.display = 'none';
+        if(irrigationColumn) irrigationColumn.style.display = 'none';
 
         // Ocultar gotas cayendo en todos los niveles
         allDrops.forEach(drops => {

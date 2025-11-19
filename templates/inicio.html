@@ -27,7 +27,7 @@
 
             <!-- Visualización Resumen del Sistema CAEC -->
             <div class="system-overview">
-                <svg class="caec-system-diagram" viewBox="0 0 1200 1500" xmlns="http://www.w3.org/2000/svg">
+                <svg class="caec-system-diagram" viewBox="0 0 1200 1350" xmlns="http://www.w3.org/2000/svg">
                     <!-- Definiciones -->
                     <defs>
                         <!-- Gradiente para el agua oscura subiendo -->
@@ -41,6 +41,18 @@
                             <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:0.7" />
                             <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.9" />
                             <stop offset="100%" style="stop-color:#e8f4f8;stop-opacity:0.7" />
+                        </linearGradient>
+                        <!-- Gradiente animado para el agua que sube -->
+                        <linearGradient id="risingWaterGradient" x1="0" x2="0" y1="1" y2="0">
+                            <stop offset="0" stop-color="#1565c0">
+                                <animate attributeName="offset" from="0" to="1" dur="2.5s" repeatCount="indefinite" />
+                            </stop>
+                            <stop offset="0" stop-color="#64b5f6">
+                                <animate attributeName="offset" from="0.05" to="1.05" dur="2.5s" repeatCount="indefinite" />
+                            </stop>
+                            <stop offset="0" stop-color="#1565c0">
+                                <animate attributeName="offset" from="0.1" to="1.1" dur="2.5s" repeatCount="indefinite" />
+                            </stop>
                         </linearGradient>
                     </defs>
 
@@ -170,41 +182,44 @@
                             </g>
                         </g>
 
-                        <!-- Columna de agua subiendo (solo visible cuando irrigación activa) -->
+                        <!-- Columna de agua subiendo (ahora con gradiente) -->
                         <g id="irrigationColumn" style="display: none;">
-                            <rect x="590" y="790" width="20" height="0" fill="url(#waterGradient)" class="water-column">
-                                <animate id="waterRise" attributeName="height" from="0" to="720" dur="2s" fill="freeze" begin="indefinite"/>
-                                <animate id="waterRiseY" attributeName="y" from="790" to="70" dur="2s" fill="freeze" begin="indefinite"/>
-                            </rect>
+                            <rect x="590" y="70" width="20" height="720" fill="url(#risingWaterGradient)" />
                         </g>
                     </g>
+
+                    <!-- Tapa del Tanque -->
+                    <rect x="395" y="785" width="410" height="10" fill="#5d4037" rx="3"/>
 
                     <!-- Tanque de Agua conectado directamente -->
                     <g id="waterTank">
                         <!-- Contenedor principal del tanque -->
-                        <rect x="450" y="790" width="300" height="340" fill="#ffffff" stroke="#1976d2" stroke-width="5" rx="12"/>
+                        <rect x="400" y="790" width="400" height="340" fill="#ffffff" stroke="#1976d2" stroke-width="5" rx="12"/>
 
-                        <!-- Nivel de agua dentro del tanque (75% lleno) -->
-                        <rect x="455" y="880" width="290" height="245" fill="#64b5f6" rx="8"/>
+                        <!-- Nivel de agua dentro del tanque (se actualizará dinámicamente) -->
+                        <rect id="tankWaterLevel" x="405" y="880" width="390" height="245" fill="#64b5f6" rx="8"/>
 
                         <!-- Clip para las olas -->
                         <clipPath id="tankClip">
-                            <rect x="450" y="790" width="300" height="340" rx="12"/>
+                            <rect x="400" y="790" width="400" height="340" rx="12"/>
                         </clipPath>
 
                         <!-- Olas animadas -->
                         <g clip-path="url(#tankClip)">
                             <g id="waterWaves" class="system-waves">
-                                <ellipse class="system-wave system-wave1" cx="600" cy="875" rx="160" ry="25" fill="rgba(255, 255, 255, 0.4)"/>
-                                <ellipse class="system-wave system-wave2" cx="600" cy="881" rx="160" ry="25" fill="rgba(255, 255, 255, 0.3)"/>
-                                <ellipse class="system-wave system-wave3" cx="600" cy="887" rx="160" ry="25" fill="rgba(255, 255, 255, 0.2)"/>
+                                <ellipse class="system-wave system-wave1" cx="600" cy="875" rx="200" ry="25" fill="rgba(255, 255, 255, 0.4)"/>
+                                <ellipse class="system-wave system-wave2" cx="600" cy="881" rx="200" ry="25" fill="rgba(255, 255, 255, 0.3)"/>
+                                <ellipse class="system-wave system-wave3" cx="600" cy="887" rx="200" ry="25" fill="rgba(255, 255, 255, 0.2)"/>
                             </g>
                         </g>
 
                         <!-- Bomba (oculta por defecto, solo visible cuando irrigación activa) -->
                         <g id="pump" style="display: none;">
-                            <!-- Tubo de conexión -->
-                            <rect x="590" y="800" width="20" height="250" fill="#37474f" stroke="#263238" stroke-width="2" />
+                            <!-- Tubo de conexión (fondo) -->
+                            <rect x="590" y="800" width="20" height="250" fill="#263238" />
+                            <!-- Agua animada dentro del tubo de conexión -->
+                            <rect x="590" y="800" width="20" height="250" fill="url(#risingWaterGradient)" />
+                            <!-- Cuerpo de la bomba -->
                             <rect x="560" y="1050" width="80" height="60" fill="#37474f" stroke="#263238" stroke-width="3" rx="6"/>
                             <circle cx="600" cy="1080" r="22" fill="#546e7a" stroke="#263238" stroke-width="2"/>
                         </g>
@@ -212,17 +227,17 @@
 
                     <!-- Indicadores Externos con más espacio -->
                     <g id="waterLevelIndicator">
-                        <line x1="780" y1="950" x2="880" y2="950" stroke="#1976d2" stroke-width="3"/>
-                        <circle cx="780" cy="950" r="7" fill="#1976d2"/>
-                        <text x="895" y="945" font-size="18" fill="#666" font-weight="500">Nivel de Agua</text>
-                        <text id="waterLevelText" x="895" y="975" font-size="34" fill="#1976d2" font-weight="bold">75%</text>
+                        <line x1="830" y1="950" x2="930" y2="950" stroke="#1976d2" stroke-width="3"/>
+                        <circle cx="830" cy="950" r="7" fill="#1976d2"/>
+                        <text x="945" y="945" font-size="18" fill="#666" font-weight="500">Nivel de Agua</text>
+                        <text id="waterLevelText" x="945" y="975" font-size="34" fill="#1976d2" font-weight="bold">75%</text>
                     </g>
 
                     <g id="phIndicator">
-                        <line x1="420" y1="950" x2="320" y2="950" stroke="#ec407a" stroke-width="3"/>
-                        <circle cx="420" cy="950" r="7" fill="#ec407a"/>
-                        <text x="305" y="945" text-anchor="end" font-size="18" fill="#666" font-weight="500">Nivel pH</text>
-                        <text id="phValueText" x="305" y="975" text-anchor="end" font-size="34" fill="#ec407a" font-weight="bold">6.5</text>
+                        <line x1="370" y1="950" x2="270" y2="950" stroke="#ec407a" stroke-width="3"/>
+                        <circle cx="370" cy="950" r="7" fill="#ec407a"/>
+                        <text x="255" y="945" text-anchor="end" font-size="18" fill="#666" font-weight="500">Nivel pH</text>
+                        <text id="phValueText" x="255" y="975" text-anchor="end" font-size="34" fill="#ec407a" font-weight="bold">6.5</text>
                     </g>
 
                     <g id="nutrientIndicator">
